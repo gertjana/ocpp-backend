@@ -50,13 +50,14 @@ defmodule OcppBackendTest do
 
   test "StartTransaction" do
     id = UUID.uuid1()
+    state = %{serial: "0400030", id: 0}
 
-    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("StartTransactionReq",id)}, :cowboy_req, %{})
+    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("StartTransactionReq",id)}, :cowboy_req, state)
     {:ok, received } = JSEX.decode(reply)
 
     assert 3 == hd(received)
     assert id == hd(tl(received))
-    assert Map.has_key?(hd(tl(tl(received))), "transactionId")
+    assert "0400030_1" == Map.get(hd(tl(tl(received))), "transactionId")
 
     idTagInfo = Map.get(hd(tl(tl(received))), "idTagInfo")
     assert Map.has_key?(idTagInfo, "idToken")

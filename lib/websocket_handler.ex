@@ -12,17 +12,14 @@ defmodule WebsocketHandler do
   def init(req, state) do
     {serial, _} = :cowboy_req.binding("serial", req)
     Map.put(state, :serial, serial)
+    Map.put(state, :id, 1)
     :erlang.start_timer(1000, self, [])
-    {:cowboy_websocket, req, state} 
+    {:cowboy_websocket, req, state}
   end
 
   # Put any essential clean-up here.
   def terminate(_reason, _req, _state) do
     :ok
-  end
-
-  def hello() do
-    :world
   end
 
   #Generic handlers just decodes from json content
@@ -47,7 +44,8 @@ defmodule WebsocketHandler do
   end
 
   defp handleOcppMessage({:ok, [2, id, "StartTransaction", %{"connectorId" => _, "idTag" => idToken, "meterStart" => _, "timestamp" => _}]}, req, state) do
-    {:ok, reply} = JSEX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken], transactionId: "xxx"]])
+    {state, transactionId} =  next_transaction_id(state)
+    {:ok, reply} = JSEX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken], transactionId: transactionId]])
     {:reply, {:text, reply}, req, state}
   end
 
@@ -96,6 +94,11 @@ defmodule WebsocketHandler do
   # fallback message handler
   def websocket_info(_info, _req, state) do
     {:ok, state}
+  end
+
+  defp next_transaction_id(state) do
+    state = %{state | :id => state.id + 1}
+    {state, state.serial <> "_" <> Integer.to_string(state.id)}
   end
 
   defp time_as_string do
