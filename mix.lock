@@ -1,0 +1,6 @@
+%{"cowboy": {:git, "https://github.com/ninenines/cowboy.git", "dbb636034f20736e16eb9d6c809217c9525b6cbd", [tag: "2.0.0-pre.3"]},
+  "cowlib": {:git, "https://github.com/ninenines/cowlib", "8cf98c9f3d1292c1b08fca5ca99772ae912eaa86", [ref: "master"]},
+  "jsex": {:hex, :jsex, "2.0.0", "d54a39e49418b34b1a78236a92f73e4d7c46329c220275d7223fab4b3dc6120f", [:mix], [{:jsx, "~> 2.0", [hex: :jsx, repo: "hexpm", optional: false]}], "hexpm"},
+  "jsx": {:hex, :jsx, "2.0.4", "6f22bd27bf0cf89626caa27f93ed4bfbf7ba5cc9d42a43656f1d247b0e170eaa", [:rebar], [], "hexpm"},
+  "ranch": {:git, "https://github.com/ninenines/ranch", "741bfb73ca663394ecf7a73410506d66f01985a6", [ref: "1.1.0"]},
+  "uuid": {:hex, :uuid, "1.1.7", "007afd58273bc0bc7f849c3bdc763e2f8124e83b957e515368c498b641f7ab69", [:mix], [], "hexpm"}}
