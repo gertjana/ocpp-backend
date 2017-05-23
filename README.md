@@ -1,4 +1,4 @@
-OCPP 1.6 Backedn
+OCPP 1.6 Backend
 ===================
 
 Start of an OCPP 1.6 compatible backend in Elixir using Cowboy
