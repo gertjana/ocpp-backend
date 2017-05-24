@@ -1,5 +1,6 @@
 defmodule OcppBackendTest do
   use ExUnit.Case
+  use Timex
 
   defp m(name, id) do
     case name do 
@@ -7,13 +8,15 @@ defmodule OcppBackendTest do
       "HeartbeatReq" -> "[2, \"#{id}\", \"Heartbeat\"]"
       "AuthorizeReq" -> "[2, \"#{id}\", \"Authorize\", {\"idToken\":\"0102030405060708\"}]"
       "AuthorizeConf" -> "[3, \"#{id}\", {\"idTagInfo\" : {\"status\":\"Accepted\", \"idToken\":\"0102030405060708\"}}]"
-      "StartTransactionReq" -> "[2, \"#{id}\", \"StartTransaction\", {\"connectorId\":\"0\", \"idTag\":\"0102030405060708\", \"meterStart\":\"0\", \"timestamp\":\"#{now}\"}]"
-      "StopTransactionReq" -> "[2, \"#{id}\", \"StopTransaction\", {\"idTag\":\"0102030405060708\", \"meterStop\":\"0\", \"timestamp\":\"#{now}\"}]"
+      "StartTransactionReq" -> "[2, \"#{id}\", \"StartTransaction\", {\"connectorId\":\"0\", \"idTag\":\"0102030405060708\", \"meterStart\": 2000, \"timestamp\":\"#{now}\"}]"
+      "StopTransactionReq" -> "[2, \"#{id}\", \"StopTransaction\", {\"idTag\":\"0102030405060708\", \"meterStop\": 2140, \"timestamp\":\"#{now}\"}]"
     end
   end
 
   defp now do
-    DateTime.to_string(DateTime.utc_now())
+    Timex.now
+    {:ok, default_str} = Timex.format(Timex.now, "{ISO:Extended}")
+    default_str
   end 
 
   test "BootNotification" do
@@ -66,8 +69,8 @@ defmodule OcppBackendTest do
 
   test "StopTransaction" do
     id = UUID.uuid1()
-
-    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("StopTransactionReq",id)}, :cowboy_req, %{})
+    state = %{serial: "0400030", id: 1, currentTransaction: %{id: "0400030_1", start: 2000, timestamp: now(), idTag: "0102030405060708"}}
+    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("StopTransactionReq",id)}, :cowboy_req, state)
     {:ok, received } = JSEX.decode(reply)
 
     assert 3 == hd(received)

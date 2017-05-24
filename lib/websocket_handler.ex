@@ -1,6 +1,6 @@
 defmodule WebsocketHandler do
   @behaviour :cowboy_websocket
-
+  
   # We are using the regular http init callback to perform handshake.
   #     http://ninenines.eu/docs/en/cowboy/2.0/manual/cowboy_handler/
   #
@@ -43,13 +43,17 @@ defmodule WebsocketHandler do
     {:reply, {:text, reply}, req, state}
   end
 
-  defp handleOcppMessage({:ok, [2, id, "StartTransaction", %{"connectorId" => _, "idTag" => idToken, "meterStart" => _, "timestamp" => _}]}, req, state) do
+  defp handleOcppMessage({:ok, [2, id, "StartTransaction", %{"connectorId" => _, "idTag" => idToken, "meterStart" => meterStart, "timestamp" => timestamp}]}, req, state) do
     {state, transactionId} =  next_transaction_id(state)
+    Map.put(state, :currentTransaction, %{id: transactionId, start: meterStart, timestamp: timestamp, idTag: idToken})
+    
     {:ok, reply} = JSEX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken], transactionId: transactionId]])
     {:reply, {:text, reply}, req, state}
   end
 
-  defp handleOcppMessage({:ok, [2, id, "StopTransaction", %{"idTag" => idToken, "meterStop" => _, "timestamp" => _}]}, req, state) do
+  defp handleOcppMessage({:ok, [2, id, "StopTransaction", %{"idTag" => idToken, "meterStop" => meterStop, "timestamp" => timestamp}]}, req, state) do
+    storeTransaction(state, meterStop, timestamp)
+    
     {:ok, reply} = JSEX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken]]])
     {:reply, {:text, reply}, req, state}
   end
@@ -95,6 +99,27 @@ defmodule WebsocketHandler do
   def websocket_info(_info, _req, state) do
     {:ok, state}
   end
+
+  defp storeTransaction(state, meterStop, timestampStop) do
+    meterStart = state.currentTransaction.start
+    {:ok, start_datetime} = Timex.parse(state.currentTransaction.timestamp, "{ISO:Extended}")
+    {:ok, stop_datetime} = Timex.parse(timestampStop, "{ISO:Extended}")
+    serial = state.serial
+    transactionId = state.currentTransaction.id
+    idToken = state.currentTransaction.idTag
+    kwh = (meterStop - meterStart)/1000
+    duration = Timex.diff(stop_datetime, start_datetime, :seconds)
+
+    IO.puts "\n-------------------------------------------------------------"
+    IO.puts "Session #{transactionId} on #{serial} with #{idToken}"
+    IO.puts "-------------------------------------------------------------"
+    IO.puts "Start: #{start_datetime}, Meter: #{meterStart}"
+    IO.puts "Stop: #{stop_datetime}, Meter: #{meterStop}"
+    IO.puts "-------------------------------------------------------------"
+    IO.puts "kWh: #{kwh}, Duration: #{duration}"
+    IO.puts "-------------------------------------------------------------"
+  end
+
 
   defp next_transaction_id(state) do
     state = %{state | :id => state.id + 1}
