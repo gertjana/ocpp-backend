@@ -55,7 +55,7 @@ var SocketHandler = (function(){
     connect();
   }  
   function connect() {
-    websocket = new WebSocket('ws://localhost:8080/websocket');
+    websocket = new WebSocket('ws://localhost:8080/websocket/0400030');
     websocket.onopen = function(evt) { onOpen(evt) }; 
     websocket.onclose = function(evt) { onClose(evt) }; 
     websocket.onmessage = function(evt) { onMessage(evt) }; 

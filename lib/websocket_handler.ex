@@ -9,8 +9,9 @@ defmodule WebsocketHandler do
   # init is the place to parse `sec-websocket-protocol` header
   # then add the same header to `req` with value containing
   # supported protocol(s).
-  def init(req, state) do
-    {serial, _} = :cowboy_req.binding("serial", req)
+  def init(req, _state) do
+    serial = :cowboy_req.binding(:serial, req)
+    state = %{}
     Map.put(state, :serial, serial)
     Map.put(state, :id, 1)
     :erlang.start_timer(1000, self, [])
@@ -24,26 +25,29 @@ defmodule WebsocketHandler do
 
   #Generic handlers just decodes from json content
   def websocket_handle({:text, content}, req, state) do
-    handleOcppMessage(JSEX.decode(content), req, state)
+    {:ok, %{ "message" => message}} = JSEX.decode(content)
+    handleOcppMessage(message, req, state)
   end
 
   # OCPP Message handlers
-  defp handleOcppMessage({:ok, [2, id, "BootNotification", _]}, req, state) do
+  defp handleOcppMessage([2, id, "BootNotification", _], req, state) do
     {:ok, reply} = JSEX.encode([3,id, [status: "Accepted", currentTime: time_as_string, heartbeatInterval: 300]])
     {:reply, {:text, reply}, req, state}
   end
 
-  defp handleOcppMessage({:ok, [2, id, "Authorize",%{"idToken" => idToken}]}, req, state) do
+  defp handleOcppMessage([2, id, "Authorize",%{"idToken" => idToken}], req, state) do
     {:ok, reply} = JSEX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken]]])
     {:reply, {:text, reply}, req, state}
   end
 
-  defp handleOcppMessage({:ok, [2, id, "Heartbeat"]}, req, state) do
+  defp handleOcppMessage([2, id, "Heartbeat"], req, state) do
+    IO.puts "got a hearbeat"
     {:ok, reply} = JSEX.encode([3, id, [currentTime: time_as_string]])
     {:reply, {:text, reply}, req, state}
   end
 
-  defp handleOcppMessage({:ok, [2, id, "StartTransaction", %{"connectorId" => _, "idTag" => idToken, "meterStart" => meterStart, "timestamp" => timestamp}]}, req, state) do
+  defp handleOcppMessage([2, id, "StartTransaction", %{"connectorId" => _, "idTag" => idToken, "meterStart" => meterStart, "timestamp" => timestamp}], req, state) do
+    #TODO check if no transaction active
     {state, transactionId} =  next_transaction_id(state)
     Map.put(state, :currentTransaction, %{id: transactionId, start: meterStart, timestamp: timestamp, idTag: idToken})
     
@@ -51,16 +55,11 @@ defmodule WebsocketHandler do
     {:reply, {:text, reply}, req, state}
   end
 
-  defp handleOcppMessage({:ok, [2, id, "StopTransaction", %{"idTag" => idToken, "meterStop" => meterStop, "timestamp" => timestamp}]}, req, state) do
+  defp handleOcppMessage([2, id, "StopTransaction", %{"idTag" => idToken, "meterStop" => meterStop, "timestamp" => timestamp}], req, state) do
+    #TODO check same token
     storeTransaction(state, meterStop, timestamp)
-    
+    #TODO clear state
     {:ok, reply} = JSEX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken]]])
-    {:reply, {:text, reply}, req, state}
-  end
-
-  #Handles invalid json
-  defp handleOcppMessage({:error, error}, req, state) do
-    {:ok, reply} = JSEX.encode([4, "", error, "Error decoding json payload"])  
     {:reply, {:text, reply}, req, state}
   end
 

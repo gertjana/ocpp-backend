@@ -4,12 +4,12 @@ defmodule OcppBackendTest do
 
   defp m(name, id) do
     case name do 
-      "BootNotificationReq"  -> "[2, \"#{id}\", \"BootNotification\", {\"chargeBoxSerialNumber\": \"04000123\", \"chargePointModel\":\"Lolo4\"}]"
-      "HeartbeatReq" -> "[2, \"#{id}\", \"Heartbeat\"]"
-      "AuthorizeReq" -> "[2, \"#{id}\", \"Authorize\", {\"idToken\":\"0102030405060708\"}]"
-      "AuthorizeConf" -> "[3, \"#{id}\", {\"idTagInfo\" : {\"status\":\"Accepted\", \"idToken\":\"0102030405060708\"}}]"
-      "StartTransactionReq" -> "[2, \"#{id}\", \"StartTransaction\", {\"connectorId\":\"0\", \"idTag\":\"0102030405060708\", \"meterStart\": 2000, \"timestamp\":\"#{now}\"}]"
-      "StopTransactionReq" -> "[2, \"#{id}\", \"StopTransaction\", {\"idTag\":\"0102030405060708\", \"meterStop\": 2140, \"timestamp\":\"#{now}\"}]"
+      "BootNotificationReq"  -> "{\"message\":[2, \"#{id}\", \"BootNotification\", {\"chargeBoxSerialNumber\": \"04000123\", \"chargePointModel\":\"Lolo4\"}]}"
+      "HeartbeatReq" -> "{\"message\":[2, \"#{id}\", \"Heartbeat\"]}"
+      "AuthorizeReq" -> "{\"message\":[2, \"#{id}\", \"Authorize\", {\"idToken\":\"0102030405060708\"}]}"
+      "AuthorizeConf" -> "{\"message\":[3, \"#{id}\", {\"idTagInfo\" : {\"status\":\"Accepted\", \"idToken\":\"0102030405060708\"}}]}"
+      "StartTransactionReq" -> "{\"message\":[2, \"#{id}\", \"StartTransaction\", {\"connectorId\":\"0\", \"idTag\":\"0102030405060708\", \"meterStart\": 2000, \"timestamp\":\"#{now}\"}]}"
+      "StopTransactionReq" -> "{\"message\":[2, \"#{id}\", \"StopTransaction\", {\"idTag\":\"0102030405060708\", \"meterStop\": 2140, \"timestamp\":\"#{now}\"}]}"
     end
   end
 
@@ -48,7 +48,8 @@ defmodule OcppBackendTest do
 
     {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("AuthorizeReq",id)}, :cowboy_req, %{})
 
-    assert JSEX.decode(m("AuthorizeConf", id)) == JSEX.decode(reply)
+    {:ok, %{"message" => message }} = JSEX.decode(m("AuthorizeConf", id))
+    assert  {:ok, message} == JSEX.decode(reply)
   end
 
   test "StartTransaction" do
