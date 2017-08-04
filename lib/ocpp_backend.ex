@@ -4,8 +4,7 @@ defmodule OcppBackend do
   Start up a cowboy http server.  The start_http method of cowboy takes
   four arguments:
     * The protocol of the server
-    * "NbAcceptors" - a non-negative-integer. This isn't further documented in
-      the cowboy docs.  I used 100, from an Erlang example.
+    * "NbAcceptors" - a non-negative-integer. the number of Accepter processes
     * TCP options for Ranch as a list of tuples.  In this case the one one
       we are using is :port, to set the server listening on port 8080.
       You could also, for example, set ipv6, timeouts, and a number of other things here.
@@ -18,27 +17,27 @@ defmodule OcppBackend do
 
   SEE ALSO: http://ninenines.eu/docs/en/cowboy/1.0/guide/getting_started/
   """
+#  def start(_type, _args) do
   def start(_type, _args) do
+    IO.puts "Starting OCPP Backend"
     dispatch_config = build_dispatch_config
     { :ok, _ } = :cowboy.start_http(:http,
-                                    100,
+                                    4096,
                                    [{:port, 8080}],
                                    [{ :env, [{:dispatch, dispatch_config}]}]
                                    )
-
+    OcppBackend.Supervisor.start_link
   end
 
   def build_dispatch_config do
-
     :cowboy_router.compile([
       { :_,
         [
-          {"/", :cowboy_static, {:priv_file, :ocpp_backend, "index.html"}},
-          {"/static/[...]", :cowboy_static, {:priv_dir,  :ocpp_backend, "static_files"}},
-
-          # Serve websocket requests.
-          {"/websocket/:serial", WebsocketHandler, []}
+          {"/client", DynamicPageHandler, []},
+          {"/ocppws/:serial", WebsocketHandler, []}
       ]}
     ])
+
   end
+
 end

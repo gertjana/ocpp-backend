@@ -1,7 +1,7 @@
 defmodule OcppBackend.Supervisor do
   use Supervisor
 
-  def start_link(_) do
+  def start_link() do
     {:ok, _sup} = Supervisor.start_link(__MODULE__, [], name: :supervisor)
   end
 

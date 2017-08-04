@@ -72,37 +72,109 @@ defmodule DynamicPageHandler do
   @doc """
   Assemble the body of a response in HTML.
   """
-  def build_body(request) do
-    """
-    <html>
+  def build_body(_request) do
+"""
+<!DOCTYPE html> 
+<html>
     <head>
-      <title>Elixir Cowboy Dynamic Example</title>
-      <link rel='stylesheet' href='/static/css/styles.css' type='text/css' />
+        <title>Elixir OCPP Test client</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
     </head>
     <body>
-      <div id='main'>
-        <h1>Dynamic Page Example</h1>
-        <p>This page is rendered via the route: <code>{"/dynamic", DynamicPageHandler, []}</code>
-        <br/>
-        and the code for the handler can be found in <code>lib/dynamic_page_handler.ex</code>.</p>
+       
+        <div>
+            serial:<input type="text" id="serial" value="04000123"/>
+        </div>
+        <div> 
+          <select id="messageSelect" onchange="selectMessage();">
+            <option value=''></option>
+            <option value='[2, "42", "BootNotification", {"chargeBoxSerialNumber": "04000123", "chargePointModel":"Lolo4"}]'>BootNotification</option>
+            <option value='[2, "42", "Heartbeat"]'>Heartbeat</option>
+            <option value='[2, "42", "Authorize", {"idToken":"0102030405060708"}]'>Authorize</option>
+            <option value='[2, "42", "StartTransaction", {"connectorId":"0", "idTag":"0102030405060708", "meterStart": 2000, "timestamp":"#{Utils.time_as_string}"}]'>StartTransaction</option>
+            <option value='[2, "42", "StopTransaction", {"idTag":"0102030405060708", "meterStop": 2140, "timestamp":"#{Utils.time_as_string}"}]'>StopTransaction</option>
+          </select>
+        </div>
+        <div>
+            message:<input size=120 type="text" id="messageinput"/>
+        </div>
+        <div>
+            <button type="button" onclick="openSocket();" >Open</button>
+            <button type="button" onclick="send();" >Send</button>
+            <button type="button" onclick="closeSocket();" >Close</button>
+        </div>
+        <div id="messages"></div>
+       
+        <!-- Script to utilise the WebSocket -->
+        <script type="text/javascript">
+                       
+            var webSocket;
+            var messages = document.getElementById("messages");
+           
+           
+            function openSocket(){
+                // Ensures only one connection is open at a time
+                if(webSocket !== undefined && webSocket.readyState !== WebSocket.CLOSED){
+                   writeResponse("WebSocket is already opened.");
+                    return;
+                }
+                serial = document.getElementById("serial").value;
+                // Create a new instance of the websocket
+                webSocket = new WebSocket("ws://localhost:8080/ocppws/"+serial, ["ocpp16", "ocpp17"]);
+                 
+                /**
+                 * Binds functions to the listeners for the websocket.
+                 */
+                webSocket.onopen = function(event){
+                    // For reasons I can't determine, onopen gets called twice
+                    // and the first time event.data is undefined.
+                    // Leave a comment if you know the answer.
+                    if(event.data === undefined)
+                        return;
+                    writeResponse("Connection opened");
+                    writeResponse(event.data);
+                };
+ 
+                webSocket.onmessage = function(event){
+                    writeResponse(event.data);
+                };
+ 
+                webSocket.onclose = function(event){
+                    writeResponse("Connection closed");
+                };
+            }
+           
+            /**
+             * Sends the value of the text input to the server
+             */
+            function send(){
+                var text = document.getElementById("messageinput").value;
+                if (text == '') return;
+                writeRequest(text);
+                webSocket.send(text);
+            }
+           
+            function closeSocket(){
+                webSocket.close();
+            }
+ 
+            function writeRequest(text){
+                messages.innerHTML += "<br/>REQ:" + text;
+            }
 
-        <h2>Current Time (:erlang.now)</h2>
-        <p><span class='time'> #{inspect(:erlang.timestamp)}</span></p>
-        <p>Reload this page to see the time change.</p>
-        <h2>Your Request Headers</h2>
-        <dl>#{dl_headers(request)}</dl>
-      </div>
+            function writeResponse(text){
+                messages.innerHTML += "<br/>RES:" + text;
+            }
+           
+
+            function selectMessage() {
+              document.getElementById("messageinput").value = document.getElementById("messageSelect").value;
+            }
+        </script>
+       
     </body>
-    </html>
+</html>
 """
   end
-
-  @doc """
-  Build the contents of a <dl> containing all the request headers.
-  """
-  def dl_headers(request) do
-    headers = :cowboy_req.headers(request)
-    Enum.map(headers, fn item -> "<dt>#{elem(item, 0)}</dt><dd>#{elem(item, 1)}</dd>" end)
-  end
-
 end
