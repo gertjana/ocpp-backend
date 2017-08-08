@@ -87,17 +87,17 @@ defmodule DynamicPageHandler do
             serial:<input type="text" id="serial" value="04000123"/>
         </div>
         <div> 
-          <select id="messageSelect" onchange="selectMessage();">
+          message:<select id="messageSelect" onchange="selectMessage();">
             <option value=''></option>
             <option value='[2, "42", "BootNotification", {"chargeBoxSerialNumber": "04000123", "chargePointModel":"Lolo4"}]'>BootNotification</option>
             <option value='[2, "42", "Heartbeat"]'>Heartbeat</option>
             <option value='[2, "42", "Authorize", {"idToken":"0102030405060708"}]'>Authorize</option>
-            <option value='[2, "42", "StartTransaction", {"connectorId":"0", "idTag":"0102030405060708", "meterStart": 2000, "timestamp":"#{Utils.time_as_string}"}]'>StartTransaction</option>
-            <option value='[2, "42", "StopTransaction", {"idTag":"0102030405060708", "meterStop": 2140, "timestamp":"#{Utils.time_as_string}"}]'>StopTransaction</option>
+            <option value='[2, "42", "StartTransaction", {"connectorId":"0", "idTag":"0102030405060708", "meterStart": 2000, "timestamp":"#{Utils.datetime_as_string}"}]'>StartTransaction</option>
+            <option value='[2, "42", "StopTransaction", {"idTag":"0102030405060708", "meterStop": 2140, "timestamp":"#{Utils.datetime_as_string(36)}"}]'>StopTransaction</option>
           </select>
         </div>
         <div>
-            message:<input size=120 type="text" id="messageinput"/>
+            <input size=120 type="text" id="messageinput"/>
         </div>
         <div>
             <button type="button" onclick="openSocket();" >Open</button>
