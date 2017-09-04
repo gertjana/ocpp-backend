@@ -116,24 +116,24 @@ defmodule DynamicPageHandler do
             function openSocket(){
                 // Ensures only one connection is open at a time
                 if(webSocket !== undefined && webSocket.readyState !== WebSocket.CLOSED){
-                   writeResponse("WebSocket is already opened.");
+                   write("WebSocket is already opened.");
                     return;
                 }
                 serial = document.getElementById("serial").value;
                 // Create a new instance of the websocket
-                webSocket = new WebSocket("ws://localhost:8080/ocppws/"+serial, ["ocpp16", "ocpp17"]);
+                webSocket = new WebSocket("ws://localhost:8383/ocppws/"+serial, ["ocpp16", "ocpp20"]);
                  
                 /**
                  * Binds functions to the listeners for the websocket.
                  */
                 webSocket.onopen = function(event){
-                    // For reasons I can't determine, onopen gets called twice
+                    write("Connection opened");
+                    // For reasons I can't determine, onopen gets called twic"e
                     // and the first time event.data is undefined.
                     // Leave a comment if you know the answer.
                     if(event.data === undefined)
                         return;
-                    writeResponse("Connection opened");
-                    writeResponse(event.data);
+                    write(event.data);
                 };
  
                 webSocket.onmessage = function(event){
@@ -141,7 +141,7 @@ defmodule DynamicPageHandler do
                 };
  
                 webSocket.onclose = function(event){
-                    writeResponse("Connection closed");
+                    write("Connection closed");
                 };
             }
            
@@ -159,15 +159,18 @@ defmodule DynamicPageHandler do
                 webSocket.close();
             }
  
+            function write(text) {
+                messages.innerHTML += "<br/>" + text;
+            }
+
             function writeRequest(text){
-                messages.innerHTML += "<br/>REQ:" + text;
+                messages.innerHTML += "<br/>--&gt;:" + text;
             }
 
             function writeResponse(text){
-                messages.innerHTML += "<br/>RES:" + text;
+                messages.innerHTML += "<br/>&lt;--:" + text;
             }
            
-
             function selectMessage() {
               document.getElementById("messageinput").value = document.getElementById("messageSelect").value;
             }
