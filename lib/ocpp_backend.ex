@@ -20,10 +20,10 @@ defmodule OcppBackend do
 #  def start(_type, _args) do
   def start(_type, _args) do
     IO.puts "Starting OCPP Backend"
-    dispatch_config = build_dispatch_config
+    dispatch_config = build_dispatch_config()
     { :ok, _ } = :cowboy.start_http(:http,
                                     4096,
-                                   [{:port, 8080}],
+                                   [{:port, 8383}],
                                    [{ :env, [{:dispatch, dispatch_config}]}]
                                    )
     OcppBackend.Supervisor.start_link

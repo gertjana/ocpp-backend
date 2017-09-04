@@ -27,7 +27,7 @@ defmodule WebsocketHandler do
 
   # Generic handlers just decodes from json content
   def websocket_handle({:text, content}, req, state) do
-    {:ok, message} = JSEX.decode(content)
+    {:ok, message} = JSX.decode(content) 
     OcppMessages.handle(message, req, state)
   end
 

@@ -5,7 +5,7 @@ defmodule OcppBackend.Mixfile do
     [app: :ocpp_backend,
      version: "0.0.3",
      elixir: ">= 1.0.0",
-     deps: deps]
+     deps: deps()]
   end
 
   def application do
@@ -17,8 +17,9 @@ defmodule OcppBackend.Mixfile do
 
   defp deps do
     [ { :cowboy, github: "ninenines/cowboy", tag: "2.0.0-pre.3" },
-      { :jsex, "~> 2.0.0" },
+      { :exjsx, "~> 3.0.0" },
       { :uuid, "~> 1.1" },
-      { :timex, "~> 3.0"} ]
+      { :timex, "~> 3.0"},
+      {:distillery, "~> 1.0"} ]
   end
 end
