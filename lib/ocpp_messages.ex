@@ -1,51 +1,56 @@
 defmodule OcppMessages do
+  use GenServer
 
-  def handle([2, id, "BootNotification", _], req, state) do
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  end 
+
+  def handle_call({[2, id, "BootNotification", _], state}, _sender, current_state) do
     {:ok, reply} = JSX.encode([3,id, [status: "Accepted", currentTime: Utils.time_as_string, heartbeatInterval: 300]])
-    {:reply, {:text, reply}, req, state}
+    {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle([2, id, "Heartbeat"], req, state) do
+  def handle_call({[2, id, "Heartbeat"], state}, _sender, current_state) do
     {:ok, reply} = JSX.encode([3, id, [currentTime: Utils.time_as_string]])
-    {:reply, {:text, reply}, req, state}
+    {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle([2, id, "Authorize",%{"idToken" => idToken}], req, state) do
+  def handle_call({[2, id, "Authorize",%{"idToken" => idToken}], state}, _sender, current_state) do
     {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken]]])
-    {:reply, {:text, reply}, req, state}
+    {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle([2, id, "StartTransaction", %{"connectorId" => _, "idTag" => idToken, "meterStart" => meterStart, "timestamp" => timestamp}], req, state) do
+  def handle_call({[2, id, "StartTransaction", %{"connectorId" => _, "idTag" => idToken, "meterStart" => meterStart, "timestamp" => timestamp}], state}, _sender, current_state) do
     case state do
       %{:currentTransaction => _} ->
         {:ok, reply} = JSX.encode([4, id, "Transaction Already started", "A session is still undergoing on this chargepoint"])  
-        {:reply, {:text, reply}, req, state}
+        {:reply, {{:text, reply}, state}, current_state}
       _ -> 
-      {state, transactionId} =  next_transaction_id(state)
-      state = Map.put(state, :currentTransaction, %{id: transactionId, start: meterStart, timestamp: timestamp, idTag: idToken})
-      
-      {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken], transactionId: transactionId]])
-      {:reply, {:text, reply}, req, state}
+        {state, transactionId} =  next_transaction_id(state)
+        state = Map.put(state, :currentTransaction, %{id: transactionId, start: meterStart, timestamp: timestamp, idTag: idToken})
+        
+        {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken], transactionId: transactionId]])
+        {:reply, {{:text, reply}, state}, current_state}
     end 
   end
 
-  def handle([2, id, "StopTransaction", %{"idTag" => idToken, "meterStop" => meterStop, "timestamp" => timestamp}], req, state) do
+  def handle_call({[2, id, "StopTransaction", %{"idTag" => idToken, "meterStop" => meterStop, "timestamp" => timestamp}], state}, _sender, current_state) do
     case state do
       %{:currentTransaction => _} ->
         storeTransaction(state, meterStop, timestamp)
         state = Map.delete(state, :currentTransaction)
         {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken]]])
-        {:reply, {:text, reply}, req, state}
+        {:reply, {{:text, reply}, state}, current_state}
       _ ->
         {:ok, reply} = JSX.encode([4, id, "Transaction not started", "you can't stop a transaction that hasn't been started"])
-        {:reply, {:text, reply}, req, state}
+        {:reply, {{:text, reply}, state}, current_state}
     end
   end
 
   #fallback handler, valid json, but we do not yet understand it
-  def handle(_, req, state) do
+  def handle_call({_, state}, _sender, current_state) do
     {:ok, reply} = JSX.encode([4, "", "Not Implemented", "This backend does not understand this message (yet)"])  
-    {:reply, {:text, reply}, req, state}
+    {:reply, {{:text, reply}, state}, current_state}
   end
 
   defp next_transaction_id(state) do

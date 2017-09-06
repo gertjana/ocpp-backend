@@ -14,7 +14,7 @@ defmodule WebsocketHandler do
         true -> 
           state = %{:serial => :cowboy_req.binding(:serial, req), :id => 1}
           req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", "ocpp16", req)
-          {:cowboy_websocket, req2, state}          
+          {:cowboy_websocket, req2, state}
         false ->
           {:shutdown, req}
       end
@@ -25,10 +25,11 @@ defmodule WebsocketHandler do
     :ok
   end
 
-  # Generic handlers just decodes from json content
+  # Generic handler just decodes from json content
   def websocket_handle({:text, content}, req, state) do
     {:ok, message} = JSX.decode(content) 
-    OcppMessages.handle(message, req, state)
+    {resp, new_state} = GenServer.call(OcppMessages, {message, state})
+    {:reply, resp, req, new_state}
   end
 
   # websocket_info is the required callback that gets called when erlang/elixir

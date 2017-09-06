@@ -2,12 +2,13 @@ defmodule OcppBackend.Supervisor do
   use Supervisor
 
   def start_link() do
-    {:ok, _sup} = Supervisor.start_link(__MODULE__, [], name: :supervisor)
+    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def init(_) do
-    processes = []
-    {:ok, {{:one_for_one, 10, 10}, processes}}
+  	Supervisor.init([
+  			OcppMessages
+  		], strategy: :one_for_one)
   end
 
 end

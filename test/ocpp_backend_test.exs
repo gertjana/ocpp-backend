@@ -23,7 +23,7 @@ defmodule OcppBackendTest do
     id = UUID.uuid1()
 
     {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("BootNotificationReq",id)}, :cowboy_req, %{})
-    {:ok, received } = JSEX.decode(reply)
+    {:ok, received } = JSX.decode(reply)
 
     assert 3 == hd(received)
     assert id == hd(tl(received))
@@ -36,7 +36,7 @@ defmodule OcppBackendTest do
     id = UUID.uuid1()
 
     {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("HeartbeatReq",id)}, :cowboy_req, %{})
-    {:ok, received } = JSEX.decode(reply)
+    {:ok, received } = JSX.decode(reply)
 
     assert 3 == hd(received)
     assert id == hd(tl(received))
@@ -48,8 +48,8 @@ defmodule OcppBackendTest do
 
     {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("AuthorizeReq",id)}, :cowboy_req, %{})
 
-    {:ok, message} = JSEX.decode(m("AuthorizeConf", id))
-    assert  {:ok, message} == JSEX.decode(reply)
+    {:ok, message} = JSX.decode(m("AuthorizeConf", id))
+    assert  {:ok, message} == JSX.decode(reply)
   end
 
   test "StartTransaction" do
@@ -57,7 +57,7 @@ defmodule OcppBackendTest do
     state = %{serial: "0400030", id: 0}
 
     {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("StartTransactionReq",id)}, :cowboy_req, state)
-    {:ok, received } = JSEX.decode(reply)
+    {:ok, received } = JSX.decode(reply)
 
     assert 3 == hd(received)
     assert id == hd(tl(received))
@@ -72,7 +72,7 @@ defmodule OcppBackendTest do
     id = UUID.uuid1()
     state = %{serial: "0400030", id: 1, currentTransaction: %{id: "0400030_1", start: 2000, timestamp: now(), idTag: "0102030405060708"}}
     {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("StopTransactionReq",id)}, :cowboy_req, state)
-    {:ok, received } = JSEX.decode(reply)
+    {:ok, received } = JSX.decode(reply)
 
     assert 3 == hd(received)
     assert id == hd(tl(received))
