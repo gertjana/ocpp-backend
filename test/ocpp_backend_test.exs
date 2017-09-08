@@ -8,8 +8,8 @@ defmodule OcppBackendTest do
       "HeartbeatReq" -> "[2, \"#{id}\", \"Heartbeat\"]"
       "AuthorizeReq" -> "[2, \"#{id}\", \"Authorize\", {\"idToken\":\"0102030405060708\"}]"
       "AuthorizeConf" -> "[3, \"#{id}\", {\"idTagInfo\" : {\"status\":\"Accepted\", \"idToken\":\"0102030405060708\"}}]"
-      "StartTransactionReq" -> "[2, \"#{id}\", \"StartTransaction\", {\"connectorId\":\"0\", \"idTag\":\"0102030405060708\", \"meterStart\": 2000, \"timestamp\":\"#{now}\"}]"
-      "StopTransactionReq" -> "[2, \"#{id}\", \"StopTransaction\", {\"idTag\":\"0102030405060708\", \"meterStop\": 2140, \"timestamp\":\"#{now}\"}]"
+      "StartTransactionReq" -> "[2, \"#{id}\", \"StartTransaction\", {\"connectorId\":\"0\", \"idTag\":\"0102030405060708\", \"meterStart\": 2000, \"timestamp\":\"#{now()}\"}]"
+      "StopTransactionReq" -> "[2, \"#{id}\", \"StopTransaction\", {\"idTag\":\"0102030405060708\", \"meterStop\": 2140, \"timestamp\":\"#{now()}\"}]"
     end
   end
   

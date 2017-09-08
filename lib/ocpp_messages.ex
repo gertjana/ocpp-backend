@@ -1,7 +1,9 @@
 defmodule OcppMessages do
   use GenServer
+  import Logger
 
   def start_link(_) do
+    info "Starting OcppMessages module"
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end 
 
