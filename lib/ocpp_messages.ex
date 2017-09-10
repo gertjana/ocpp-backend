@@ -18,7 +18,8 @@ defmodule OcppMessages do
   end
 
   def handle_call({[2, id, "Authorize",%{"idToken" => idToken}], state}, _sender, current_state) do
-    {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idToken]]])
+    notificationStatus = GenServer.call(TokenAuthorisation, {:rfid, idToken})
+    {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: notificationStatus, idToken: idToken]]])
     {:reply, {{:text, reply}, state}, current_state}
   end
 

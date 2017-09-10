@@ -6,9 +6,10 @@ defmodule OcppBackend.Supervisor do
   end
 
   def init(_) do
-  	Supervisor.init([
-  			OcppMessages
-  		], strategy: :one_for_one)
+  Supervisor.init([
+    OcppMessages,
+    TokenAuthorisation
+  ], strategy: :one_for_one)
   end
 
 end
