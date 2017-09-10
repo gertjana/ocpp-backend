@@ -1,5 +1,6 @@
 defmodule OcppBackend do
   import Logger
+  import Utils
   @doc """
   Start up a cowboy http server.  The start_http method of cowboy takes
   four arguments:
@@ -19,11 +20,14 @@ defmodule OcppBackend do
   """
 #  def start(_type, _args) do
   def start(_type, _args) do
-    info "Starting OCPP Backend application"
+#    port = String.to_integer(default(System.get_env("PORT"), "8383"))
+    port = System.get_env("PORT") |> default("8383") |> String.to_integer
+    info "Starting OCPP Backend application on #{port}"
+
     dispatch_config = build_dispatch_config()
     { :ok, _ } = :cowboy.start_http(:http,
-                                    32,
-                                   [{:port, 8383}],
+                                    32, #4096
+                                   [{:port, port}],
                                    [{ :env, [{:dispatch, dispatch_config}]}]
                                    )
     OcppBackend.Supervisor.start_link

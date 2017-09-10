@@ -16,4 +16,12 @@ defmodule Utils do
     {:ok, default_str} = Timex.format(Timex.shift(Timex.now, minutes: shift_minutes), "{ISO:Extended}")
   	default_str
   end
+
+  def default(val, default) do
+    case val do
+      nil -> default
+      _ -> val
+    end
+  end
+
 end
