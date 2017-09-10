@@ -80,6 +80,11 @@ defmodule DynamicPageHandler do
         <title>Elixir OCPP Test client</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
+        <style>
+          body,input,select, button {
+            font-size: 20px;
+          }
+        </style>
     </head>
     <body>
        
