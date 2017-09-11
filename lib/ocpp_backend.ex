@@ -20,8 +20,11 @@ defmodule OcppBackend do
   """
 #  def start(_type, _args) do
   def start(_type, _args) do
-#    port = String.to_integer(default(System.get_env("PORT"), "8383"))
-    port = System.get_env("PORT") |> default("8383") |> String.to_integer
+
+    port = System.get_env("PORT") 
+            |> default("8383") 
+            |> String.to_integer
+
     info "Starting OCPP Backend application on #{port}"
 
     dispatch_config = build_dispatch_config()
