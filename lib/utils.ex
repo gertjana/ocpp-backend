@@ -8,13 +8,13 @@ defmodule Utils do
   end
 
   def datetime_as_string do
-  	{:ok, default_str} = Timex.format(Timex.now, "{ISO:Extended}")
-  	default_str
+  	{:ok, dt_string} = Timex.format(Timex.now, "{ISO:Extended}")
+  	dt_string
   end
 
   def datetime_as_string(shift_minutes) do
-    {:ok, default_str} = Timex.format(Timex.shift(Timex.now, minutes: shift_minutes), "{ISO:Extended}")
-  	default_str
+    {:ok, dt_string} = Timex.format(Timex.shift(Timex.now, minutes: shift_minutes), "{ISO:Extended}")
+  	dt_string
   end
 
   def default(val, default) do
