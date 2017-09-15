@@ -9,13 +9,18 @@ This is primarly meant for an knowledge sharing session within my company
 Usage:
 ------------------
 
-Make sure you have elixir >= 1.0.0 installed.  Clone the repo, and change directory to it.  Run the following commands:
+Make sure you have elixir >= 1.0.0 installed.  
+```
+brew install elixir
+```
+
+Clone the repo, and change directory to it.  Run the following commands:
 
     mix deps.get
     mix deps.compile
     iex -S mix
 
-Then use a websocket client on localhost:8080
+Then use a websocket client on localhost:8383
 
 
 Attributions:
