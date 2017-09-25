@@ -3,10 +3,10 @@ defmodule WebsocketHandler do
 
 
   def init(req, _state) do
-      case Enum.member?(:cowboy_req.parse_header("sec-websocket-protocol", req), "ocpp16") do
+      case Enum.member?(:cowboy_req.parse_header("sec-websocket-protocol", req), "ocpp1.6") do
         true -> 
           state = %{:serial => :cowboy_req.binding(:serial, req), :id => 1}
-          req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", "ocpp16", req)
+          req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", "ocpp1.6", req)
           {:cowboy_websocket, req2, state}
         false ->
           {:shutdown, req}

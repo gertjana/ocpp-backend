@@ -8,16 +8,21 @@ defmodule OcppMessages do
   end 
 
   def handle_call({[2, id, "BootNotification", _], state}, _sender, current_state) do
-    {:ok, reply} = JSX.encode([3,id, [status: "Accepted", currentTime: Utils.time_as_string, heartbeatInterval: 300]])
+    {:ok, reply} = JSX.encode([3,id, [status: "Accepted", currentTime: Utils.datetime_as_string, heartbeatInterval: 300]])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "Heartbeat"], state}, _sender, current_state) do
-    {:ok, reply} = JSX.encode([3, id, [currentTime: Utils.time_as_string]])
+  def handle_call({[2, id, "StatusNotification", _], state}, _sender, current_state) do
+    {:ok, reply} = JSX.encode([3,id, []])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "Authorize",%{"idToken" => idToken}], state}, _sender, current_state) do
+  def handle_call({[2, id, "Heartbeat", _], state}, _sender, current_state) do
+    {:ok, reply} = JSX.encode([3, id, [currentTime: Utils.datetime_as_string]])
+    {:reply, {{:text, reply}, state}, current_state}
+  end
+
+  def handle_call({[2, id, "Authorize",%{"idTag" => idToken}], state}, _sender, current_state) do
     notificationStatus = GenServer.call(TokenAuthorisation, {:rfid, idToken})
     {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: notificationStatus, idToken: idToken]]])
     {:reply, {{:text, reply}, state}, current_state}
