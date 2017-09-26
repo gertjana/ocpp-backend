@@ -95,7 +95,8 @@ defmodule DynamicPageHandler do
           message:<select id="messageSelect" onchange="selectMessage();">
             <option value=''></option>
             <option value='[2, "42", "BootNotification", {"chargeBoxSerialNumber": "04000123", "chargePointModel":"Lolo4"}]'>BootNotification</option>
-            <option value='[2, "42", "Heartbeat"]'>Heartbeat</option>
+            <option value='[2, "42", "Heartbeat",{}]'>Heartbeat</option>
+            <option value='[2, "42", "StatusNotification",{"connectorId":"1","errorCode":"0","status":"Charging"}]'>StatusNotification</option>
             <option value='[2, "42", "Authorize", {"idToken":"0102030405060708"}]'>Authorize</option>
             <option value='[2, "42", "StartTransaction", {"connectorId":"0", "idTag":"0102030405060708", "meterStart": 2000, "timestamp":"#{Utils.datetime_as_string}"}]'>StartTransaction</option>
             <option value='[2, "42", "StopTransaction", {"idTag":"0102030405060708", "meterStop": 2140, "timestamp":"#{Utils.datetime_as_string(36)}"}]'>StopTransaction</option>
@@ -126,7 +127,7 @@ defmodule DynamicPageHandler do
                 }
                 serial = document.getElementById("serial").value;
                 // Create a new instance of the websocket
-                webSocket = new WebSocket("ws://localhost:8383/ocppws/"+serial, ["ocpp16", "ocpp20"]);
+                webSocket = new WebSocket("ws://localhost:8383/ocppws/"+serial, ["ocpp1.6", "ocpp2.0"]);
                  
                 /**
                  * Binds functions to the listeners for the websocket.

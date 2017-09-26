@@ -23,6 +23,21 @@ Clone the repo, and change directory to it.  Run the following commands:
 Then use a websocket client on localhost:8383/client
 
 
+Sending messages back:
+----------------------
+Whenever a chargepoint connected the following message will appear in the console
+```
+12:16:16.148 [info]  Initializing WebSocketconnection for #PID<0.320.0>
+```
+please note the PID number
+to send a message from the console simply do:
+```
+send pid("0.320.0"), [3,"42", "TriggerMessage", %{"requestedMessage" => "Heartbeat"}]
+```
+where the PID number is the one mentioned above,
+the message is in default elixir primitives, eq a List of 3, id, MessageType and a Payload which is a Map
+
+
 Attributions:
 -------------
 This is based on a cowboy_elixir_example by
