@@ -32,7 +32,7 @@ Whenever a chargepoint connected the following message will appear in the consol
 please note the PID number
 to send a message from the console simply do:
 ```
-send pid("0.320.0"), [3,"42", "TriggerMessage", %{"requestedMessage" => "Heartbeat"}]
+send pid("0.320.0"), [2,"42", "TriggerMessage", %{"requestedMessage" => "Heartbeat"}]
 ```
 where the PID number is the one mentioned above,
 the message is in default elixir primitives, eq a List of 3, id, MessageType and a Payload which is a Map

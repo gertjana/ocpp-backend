@@ -8,7 +8,7 @@ defmodule OcppMessages do
   end 
 
   def handle_call({[2, id, "BootNotification", _], state}, _sender, current_state) do
-    {:ok, reply} = JSX.encode([3,id, [status: "Pending", currentTime: Utils.datetime_as_string, heartbeatInterval: 300]])
+    {:ok, reply} = JSX.encode([3,id, [status: "Pending", currentTime: Utils.datetime_as_string, interval: 300]])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
