@@ -17,6 +17,11 @@ defmodule OcppMessages do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
+  def handle_call({[2, id, "CancelReservation", _], state}, _sender, current_state) do
+    {:ok, reply} = JSX.encode([3,id, [status: "Accepted"]])
+    {:reply, {{:text, reply}, state}, current_state}
+  end
+
   def handle_call({[2, id, "Heartbeat", _], state}, _sender, current_state) do
     {:ok, reply} = JSX.encode([3, id, [currentTime: Utils.datetime_as_string]])
     {:reply, {{:text, reply}, state}, current_state}

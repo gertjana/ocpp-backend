@@ -4,10 +4,11 @@ defmodule OcppBackendTest do
 
   defp m(name, id) do
     case name do 
-      "BootNotificationReq"  -> "[2, \"#{id}\", \"BootNotification\", {\"chargeBoxSerialNumber\": \"04000123\", \"chargePointModel\":\"Lolo4\"}]"
-      "HeartbeatReq" -> "[2, \"#{id}\", \"Heartbeat\", {}]"
       "AuthorizeReq" -> "[2, \"#{id}\", \"Authorize\", {\"idTag\":\"0102030405060708\"}]"
       "AuthorizeConf" -> "[3, \"#{id}\", {\"idTagInfo\" : {\"status\":\"Accepted\", \"idToken\":\"0102030405060708\"}}]"
+      "BootNotificationReq"  -> "[2, \"#{id}\", \"BootNotification\", {\"chargeBoxSerialNumber\": \"04000123\", \"chargePointModel\":\"Lolo4\"}]"
+      "CancelReservationReq" -> "[2, \"#{id}\", \"CancelReservation\", {\"reservationId\":\"1\"}]"
+      "HeartbeatReq" -> "[2, \"#{id}\", \"Heartbeat\", {}]"
       "StartTransactionReq" -> "[2, \"#{id}\", \"StartTransaction\", {\"connectorId\":\"0\", \"idTag\":\"0102030405060708\", \"meterStart\": 2000, \"timestamp\":\"#{now()}\"}]"
       "StopTransactionReq" -> "[2, \"#{id}\", \"StopTransaction\", {\"idTag\":\"0102030405060708\", \"meterStop\": 2140, \"timestamp\":\"#{now()}\"}]"
     end
@@ -51,6 +52,18 @@ defmodule OcppBackendTest do
     {:ok, message} = JSX.decode(m("AuthorizeConf", id))
     assert  {:ok, message} == JSX.decode(reply)
   end
+
+  test "CancelReservation" do
+    id = UUID.uuid1()
+
+    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("CancelReservationReq",id)}, :cowboy_req, %{})
+    {:ok, received } = JSX.decode(reply)
+
+    assert 3 == hd(received)
+    assert id == hd(tl(received))
+    assert "Accepted" == Map.get(hd(tl(tl(received))), "status")
+  end
+
 
   test "StartTransaction" do
     id = UUID.uuid1()
