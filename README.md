@@ -22,8 +22,9 @@ Clone the repo, and change directory to it.  Run the following commands:
     mix deps.compile
     iex -S mix
 
-Then use a websocket client on localhost:8383/client
+Connect a 1.6 Charger or simulator to localhost:8383/ocppws/:serial 
 
+Or use the websocket client on localhost:8383/client
 
 Sending messages back:
 ----------------------
