@@ -3,8 +3,9 @@ defmodule TokenAuthorisation do
   import Logger
 
   def start_link(_) do
-    info "Starting TokenAuthorisation module"
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+    {:ok, pid} = GenServer.start_link(__MODULE__, [], name: __MODULE__)
+    info "Started #{__MODULE__} #{inspect(pid)}"
+    {:ok, pid}
   end 
 
   defp tokens do

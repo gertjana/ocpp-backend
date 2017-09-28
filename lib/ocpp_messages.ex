@@ -3,8 +3,9 @@ defmodule OcppMessages do
   import Logger
 
   def start_link(_) do
-    info "Starting OcppMessages module"
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+    {:ok, pid} = GenServer.start_link(__MODULE__, [], name: __MODULE__)
+    info "Starting #{__MODULE__} #{inspect(pid)}"
+    {:ok, pid}
   end 
 
   def handle_call({[2, id, "BootNotification", _], state}, _sender, current_state) do
