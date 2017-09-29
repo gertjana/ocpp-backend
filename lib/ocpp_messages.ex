@@ -13,7 +13,8 @@ defmodule OcppMessages do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "StatusNotification", _], state}, _sender, current_state) do
+  def handle_call({[2, id, "StatusNotification", %{"status" => status}], state}, _sender, current_state) do
+    GenServer.call(Chargepoints, {:status, status, state.serial})
     {:ok, reply} = JSX.encode([3,id, []])
     {:reply, {{:text, reply}, state}, current_state}
   end

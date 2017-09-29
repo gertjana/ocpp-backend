@@ -8,12 +8,8 @@ defmodule Chargepoints do
     {:ok, pid}
   end
 
-  # def subscribe(serial, pid), do: GenServer.call(sef, {:subscribe, serial, pid})
-  # def unsubscribe(serial), do: GenServer.call(Chargepoints, {:unsubscribe, serial})
-  # def subscribers(), do: GenServer.call(Chargepoints, :subscribers)
-
   def handle_call({:subscribe, serial, pid}, _from, chargepoints) do
-    {:reply, :ok, Map.put(chargepoints, serial, pid)}
+    {:reply, :ok, Map.put(chargepoints, serial, %{pid: pid, status: "Unknown"})}
   end
 
   def handle_call({:unsubscribe, serial}, _from, chargepoints) do
@@ -22,5 +18,9 @@ defmodule Chargepoints do
 
   def handle_call(:subscribers, _from, chargepoints) do
     {:reply, {:ok, chargepoints}, chargepoints}
+  end
+
+  def handle_call({:status, status, serial}, _from, chargepoints) do
+    {:reply, :ok, put_in(chargepoints[serial].status, status)}
   end
 end
