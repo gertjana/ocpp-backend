@@ -40,7 +40,9 @@ defmodule OcppBackend do
     :cowboy_router.compile([
       { :_,
         [
+          {"/static/[...]", :cowboy_static, {:priv_dir,  :ocpp_backend, "static_files"}},
           {"/client", DynamicPageHandler, []},
+          {"/chargers", ChargerPageHandler, []},
           {"/ocppws/:serial", WebsocketHandler, []}
       ]}
     ])
