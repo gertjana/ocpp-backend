@@ -25,6 +25,8 @@ defmodule WebsocketHandler do
 
   def websocket_handle({:text, content}, req, state) do  
     {:ok, message} = JSX.decode(content) 
+    serial = :cowboy_req.binding(:serial, req)
+    GenServer.call(Chargepoints, {:message_seen, serial})
     {resp, new_state} = GenServer.call(OcppMessages, {message, state})
     {:reply, resp, req, new_state}
   end

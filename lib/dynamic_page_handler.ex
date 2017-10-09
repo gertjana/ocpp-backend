@@ -68,7 +68,6 @@ defmodule DynamicPageHandler do
     :ok
   end
 
-
   @doc """
   Assemble the body of a response in HTML.
   """
@@ -89,12 +88,12 @@ defmodule DynamicPageHandler do
     <body>
        
         <div>
-            serial:<input type="text" id="serial" value="04000123"/>
+            serial:<input type="text" id="serial" value="01234567"/>
         </div>
         <div> 
           message:<select id="messageSelect" onchange="selectMessage();">
             <option value=''></option>
-            <option value='[2, "42", "BootNotification", {"chargeBoxSerialNumber": "04000123", "chargePointModel":"Lolo4"}]'>BootNotification</option>
+            <option value='[2, "42", "BootNotification", {"chargeBoxSerialNumber": "01234567", "chargePointModel":"Lolo4"}]'>BootNotification</option>
             <option value='[2, "42", "Heartbeat",{}]'>Heartbeat</option>
             <option value='[2, "42", "StatusNotification",{"connectorId":"1","errorCode":"0","status":"Charging"}]'>StatusNotification</option>
             <option value='[2, "42", "Authorize", {"idToken":"0102030405060708"}]'>Authorize</option>
@@ -127,7 +126,7 @@ defmodule DynamicPageHandler do
                 }
                 serial = document.getElementById("serial").value;
                 // Create a new instance of the websocket
-                webSocket = new WebSocket("ws://localhost:8383/ocppws/"+serial, ["ocpp1.6", "ocpp2.0"]);
+                webSocket = new WebSocket("ws://"+serial+":abcdef1234abcdef1234abcdef1234abcdef1234@localhost:8383/ocppws/"+serial, ["ocpp1.6"]);
                  
                 /**
                  * Binds functions to the listeners for the websocket.

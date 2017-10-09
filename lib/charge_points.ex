@@ -1,5 +1,6 @@
 defmodule Chargepoints do
   use GenServer
+  use Agent
   import Logger
 
   def start_link(_) do 
@@ -9,7 +10,8 @@ defmodule Chargepoints do
   end
 
   def handle_call({:subscribe, serial, pid}, _from, chargepoints) do
-    {:reply, :ok, Map.put(chargepoints, serial, %{pid: pid, status: "Unknown"})}
+    {:reply, :ok, Map.put(chargepoints, serial, 
+      %{pid: pid, status: "Unknown", connected: Utils.datetime_as_string, last_seen: ""})}
   end
 
   def handle_call({:unsubscribe, serial}, _from, chargepoints) do
@@ -22,5 +24,9 @@ defmodule Chargepoints do
 
   def handle_call({:status, status, serial}, _from, chargepoints) do
     {:reply, :ok, put_in(chargepoints[serial].status, status)}
+  end
+
+  def handle_call({:message_seen, serial}, _from, chargepoints) do
+    {:reply, :ok, put_in(chargepoints[serial].last_seen, Utils.datetime_as_string)}
   end
 end

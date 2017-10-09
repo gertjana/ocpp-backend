@@ -9,7 +9,9 @@ defmodule OcppBackend.Supervisor do
   Supervisor.init([
     OcppMessages,
     TokenAuthorisation,
-    Chargepoints
+    Chargepoints,
+    Chargetokens,
+    Chargesessions
   ], strategy: :one_for_one)
   end
 

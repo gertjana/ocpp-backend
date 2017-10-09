@@ -8,17 +8,10 @@ defmodule TokenAuthorisation do
     {:ok, pid}
   end 
 
-  defp tokens do
-    %{
-      "0102030405060708" => false,
-      "0102030405060709" => true,
-      "010203040506070A" => false
-    }
-  end
-
   def handle_call({:rfid, rfid}, _sender, state) do
+    {:ok, tokens} = Genserver.call(Chargetokens, :all)
     authorised = 
-      case Map.get(tokens(),rfid) do
+      case Map.get(tokens,rfid) do
         blocked when not blocked -> "Accepted"
         blocked when blocked     -> "Blocked"
         nil                      -> "Invalid"
