@@ -1,5 +1,5 @@
 
-defmodule ChargerPageHandler do
+defmodule DashboardPageHandler do
  
   def init(req, state) do
     handle(req, state)

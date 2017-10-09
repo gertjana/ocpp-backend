@@ -1,5 +1,5 @@
 
-defmodule DynamicPageHandler do
+defmodule WebsocketClientPageHandler do
   @moduledoc """
   A cowboy handler for serving a single dynamic wepbage. No templates are used; the
   HTML is all generated within the handler.
