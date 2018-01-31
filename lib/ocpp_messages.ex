@@ -1,4 +1,7 @@
 defmodule OcppMessages do
+  @moduledoc """
+    This module handles all OCPP 1.6 messages
+  """
   use GenServer
   import Logger
 
@@ -83,25 +86,5 @@ defmodule OcppMessages do
     state = %{state | :id => state.id + 1}
     {state, state.serial <> "_" <> Integer.to_string(state.id)}
   end
-
-  # defp storeTransaction(state, meterStop, timestampStop) do
-  #   meterStart = state.currentTransaction.start
-  #   {:ok, start_datetime} = Timex.parse(state.currentTransaction.timestamp, "{ISO:Extended}")
-  #   {:ok, stop_datetime} = Timex.parse(timestampStop, "{ISO:Extended}")
-  #   serial = state.serial
-  #   transactionId = state.currentTransaction.id
-  #   idToken = state.currentTransaction.idTag
-  #   kwh = (meterStop - meterStart)/1000
-  #   duration = Timex.diff(stop_datetime, start_datetime, :seconds)
-
-  #   IO.puts "\n-------------------------------------------------------------"
-  #   IO.puts "Session #{transactionId} on #{serial} with #{idToken}"
-  #   IO.puts "-------------------------------------------------------------"
-  #   IO.puts "Start: #{start_datetime}, Meter: #{meterStart}"
-  #   IO.puts "Stop:  #{stop_datetime}, Meter: #{meterStop}"
-  #   IO.puts "-------------------------------------------------------------"
-  #   IO.puts "kWh: #{kwh}, Duration: #{duration}"
-  #   IO.puts "-------------------------------------------------------------"
-  # end
 
 end

@@ -9,7 +9,7 @@ defmodule TokenAuthorisation do
   end 
 
   def handle_call({:rfid, rfid}, _sender, state) do
-    {:ok, tokens} = Genserver.call(Chargetokens, :all)
+    {:ok, tokens} = GenServer.call(Chargetokens, :all)
     authorised = 
       case Map.get(tokens,rfid) do
         blocked when not blocked -> "Accepted"

@@ -6,13 +6,17 @@ defmodule OcppBackend.Supervisor do
   end
 
   def init(_) do
-  Supervisor.init([
-    OcppMessages,
-    TokenAuthorisation,
-    Chargepoints,
-    Chargetokens,
-    Chargesessions
-  ], strategy: :one_for_one)
+
+    children =  [
+      worker(OcppBackend.Repo, []),
+      OcppMessages,
+      TokenAuthorisation,
+      Chargepoints,
+      Chargetokens,
+      Chargesessions
+    ]
+
+    Supervisor.init(children, strategy: :one_for_one)
   end
 
 end

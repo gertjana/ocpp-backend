@@ -11,7 +11,7 @@ defmodule OcppBackend.Mixfile do
   def application do
     [
       mod: { OcppBackend, [] },
-      applications: [:cowboy, :ranch, :timex]
+      applications: [:cowboy, :ranch, :timex, :postgrex, :ecto]
     ]
   end
 
@@ -20,6 +20,8 @@ defmodule OcppBackend.Mixfile do
       { :exjsx,       "~> 3.0.0" },
       { :uuid,        "~> 1.1" },
       { :timex,       "~> 3.0"},
-      { :distillery,  "~> 1.0"} ]
+      { :distillery,  "~> 1.0"},
+      { :postgrex,    "0.10.0"},
+      { :ecto,        "~> 1.0"} ]
   end
 end
