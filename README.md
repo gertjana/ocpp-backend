@@ -20,11 +20,24 @@ Clone the repo, and change directory to it.  Run the following commands:
 
     mix deps.get
     mix deps.compile
+
+
+Have a local postgres database ready and configure acces in `config/config.exs`
+
+
+run the database migrations
+
+    mix ecto.migrate
+
+and then start it up with:
+
     iex -S mix
 
 Connect a 1.6 Charger or simulator to localhost:8383/ocppws/:serial 
 
 Or use the websocket client on localhost:8383/client
+
+There's a simple UI running at localhost:8383/chargers
 
 Sending messages back:
 ----------------------
