@@ -33,7 +33,7 @@ defmodule OcppMessages do
   end
 
   def handle_call({[2, id, "Authorize",%{"idTag" => idToken}], state}, _sender, current_state) do
-    notificationStatus = GenServer.call(TokenAuthorisation, {:rfid, idToken})
+    notificationStatus = GenServer.call(TokenAuthorisation, {:token, idToken})
     {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: notificationStatus, idToken: idToken]]])
     {:reply, {{:text, reply}, state}, current_state}
   end
@@ -47,7 +47,10 @@ defmodule OcppMessages do
         {state, transactionId} =  next_transaction_id(state)
         state = Map.put(state, :currentTransaction, %{id: transactionId, start: meterStart, timestamp: timestamp, idTag: idTag})
 
-        GenServer.call(Chargesessions, {:start, transactionId, state.serial, idTag, timestamp})
+
+        {:ok, start_time} = Timex.parse(timestamp, "{ISO:Extended}")
+
+        GenServer.call(Chargesessions, {:start, transactionId, state.serial, idTag, start_time})
 
         {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idTag], transactionId: transactionId]])
         {:reply, {{:text, reply}, state}, current_state}
@@ -60,8 +63,11 @@ defmodule OcppMessages do
         case Map.get(currentTransaction, :idTag) do
           tag when tag == idTag ->
             volume = meterStop - Map.get(currentTransaction, :start)
+            IO.inspect(volume)
             transactionId = Map.get(currentTransaction, :id)
-            GenServer.call(Chargesessions, {:stop, transactionId, volume, timestamp})
+            {:ok, stop_time} = Timex.parse(timestamp, "{ISO:Extended}")
+
+            GenServer.call(Chargesessions, {:stop, transactionId, volume, stop_time})
 
             state = Map.delete(state, :currentTransaction)
             {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idTag]]])
@@ -74,6 +80,11 @@ defmodule OcppMessages do
         {:ok, reply} = JSX.encode([4, id, "Transaction not started", "you can't stop a transaction that hasn't been started"])
         {:reply, {{:text, reply}, state}, current_state}
     end
+  end
+
+  def handle_call({[2, id, "DataTransfer",%{"vendorId" => _vendorId}], state}, _sender, current_state) do
+    {:ok, reply} = JSX.encode([3, id, [status: "Rejected", data: "Not Implemented"]])
+    {:reply, {{:text, reply}, state}, current_state}
   end
 
   #fallback handler, valid json, but we do not yet understand it

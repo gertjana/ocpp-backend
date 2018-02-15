@@ -9,24 +9,46 @@ defmodule Chargepoints do
     {:ok, pid}
   end
 
-  def handle_call({:subscribe, serial, pid}, _from, chargepoints) do
-    {:reply, :ok, Map.put(chargepoints, serial, 
-      %{pid: pid, status: "Unknown", connected: Utils.datetime_as_string, last_seen: ""})}
+  def handle_call({:subscribe, serial, pid}, _from, _state) do
+    case getChargerBySerial(serial) do
+      nil -> 
+        charger = %Model.Charger{serial: serial, pid: inspect(pid), status: "Available", connected: Timex.now, last_seen: Timex.now }
+        {:ok, inserted} = OcppBackendRepo.insert(charger)
+        {:reply, :ok, inserted}
+      _charger ->
+        {:ok, updated} = update(serial, %{status: "Available", pid: inspect(pid)})
+        {:reply, :ok, updated}
+    end
   end
 
-  def handle_call({:unsubscribe, serial}, _from, chargepoints) do
-    {:reply, :ok, Map.delete(chargepoints, serial)}
+  def handle_call({:unsubscribe, serial}, _from, _state) do
+    {:ok, updated} = update(serial, %{status: "Offline"})
+    {:reply, :ok, updated}
   end
 
-  def handle_call(:subscribers, _from, chargepoints) do
-    {:reply, {:ok, chargepoints}, chargepoints}
+  def handle_call(:subscribers, _from, state) do
+    chargepoints = Model.Charger |> OcppBackendRepo.all()
+    {:reply, {:ok, chargepoints}, state}
   end
 
-  def handle_call({:status, status, serial}, _from, chargepoints) do
-    {:reply, :ok, put_in(chargepoints[serial].status, status)}
+  def handle_call({:status, status, serial}, _from, _state) do
+    {:ok, updated} = update(serial, %{status: status})
+    {:reply, :ok, updated}
   end
 
-  def handle_call({:message_seen, serial}, _from, chargepoints) do
-    {:reply, :ok, put_in(chargepoints[serial].last_seen, Utils.datetime_as_string)}
+  def handle_call({:message_seen, serial}, _from, _state) do
+    {:ok, updated} = update(serial, %{last_seen: Timex.now})
+    {:reply, :ok, updated}
   end
+
+  defp getChargerBySerial(serial) do
+    Model.Charger |> OcppBackendRepo.get_by(serial: serial)
+  end
+
+  defp update(serial, changes) do
+    charger = getChargerBySerial(serial)
+    changeset = Model.Charger.changeset(charger, changes)
+    OcppBackendRepo.update(changeset)
+  end
+
 end

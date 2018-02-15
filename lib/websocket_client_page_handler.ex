@@ -88,15 +88,22 @@ defmodule WebsocketClientPageHandler do
     <body>
        
         <div>
-            serial:<input type="text" id="serial" value="01234567"/>
+            serial: <input type="text" id="serial" value="Rotterdam"/>
+        </div>
+        <div>
+            host: <select id="hostSelect">
+              <option value='local_ex'>local elixir</option> 
+              <option value='local_cn'>local CN</option> 
+            </select>
         </div>
         <div> 
           message:<select id="messageSelect" onchange="selectMessage();">
             <option value=''></option>
             <option value='[2, "42", "BootNotification", {"chargeBoxSerialNumber": "01234567", "chargePointModel":"Lolo4"}]'>BootNotification</option>
             <option value='[2, "42", "Heartbeat",{}]'>Heartbeat</option>
+            <option value='[2, "42", "DataTransfer",{"vendorId":"magnumcap","messageId":"StateOfCharge","data":"48"}]'>DataTransfer</option>
             <option value='[2, "42", "StatusNotification",{"connectorId":"1","errorCode":"0","status":"Charging"}]'>StatusNotification</option>
-            <option value='[2, "42", "Authorize", {"idToken":"0102030405060708"}]'>Authorize</option>
+            <option value='[2, "42", "Authorize", {"idTag":"0102030405060708"}]'>Authorize</option>
             <option value='[2, "42", "StartTransaction", {"connectorId":"0", "idTag":"0102030405060708", "meterStart": 2000, "timestamp":"#{Utils.datetime_as_string}"}]'>StartTransaction</option>
             <option value='[2, "42", "StopTransaction", {"idTag":"0102030405060708", "meterStop": 2140, "timestamp":"#{Utils.datetime_as_string(36)}"}]'>StopTransaction</option>
           </select>
@@ -125,9 +132,17 @@ defmodule WebsocketClientPageHandler do
                     return;
                 }
                 serial = document.getElementById("serial").value;
+                host = document.getElementById("hostSelect").value;
+
                 // Create a new instance of the websocket
-                webSocket = new WebSocket("ws://"+serial+":abcdef1234abcdef1234abcdef1234abcdef1234@localhost:8383/ocppws/"+serial, ["ocpp1.6"]);
-                 
+
+                if (host == 'local_ex') {
+                  webSocket = new WebSocket("ws://"+serial+":abcdef1234abcdef1234abcdef1234abcdef1234@localhost:8383/ocppws/"+serial, ["ocpp1.6"]);
+                }
+                if (host == 'local_cn') {
+                  webSocket = new WebSocket("ws://127.0.0.1:8017/ocppws/"+serial, ["ocpp1.6"]);
+                }
+
                 /**
                  * Binds functions to the listeners for the websocket.
                  */

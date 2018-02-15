@@ -37,46 +37,51 @@ defmodule DashboardPageHandler do
     :ok
   end
 
+  defp onlineChargers do
+    {:ok, chargers} = GenServer.call(Chargepoints, :subscribers)
+    chargers 
+      |> Enum.filter(fn x -> x.status != "Offline" end)
+      |> Enum.count      
+  end
+
   defp charger_rows() do 
     {:ok, chargers} = GenServer.call(Chargepoints, :subscribers)
-    Enum.map(chargers, 
-      fn {
-        k,v} -> "  <tr>" 
-            <>  "    <td>#{k}</td>"
-            <>  "    <td>#{inspect(v.pid)}</td>"
-            <>  "    <td>#{v.status}</td>"
-            <>  "    <td>#{v.connected}</td>"
-            <>  "    <td>#{v.last_seen}</td>"
+    chargers |> Enum.map( 
+      fn c -> "  <tr>" 
+            <>  "    <td>#{c.serial}</td>"
+            <>  "    <td>#{c.pid}<td>"
+            <>  "    <td>#{c.status}</td>"
+            <>  "    <td>#{c.connected}</td>"
+            <>  "    <td>#{c.last_seen}</td>"
             <>  "  </tr>"
       end)
   end
 
   defp token_rows() do
     {:ok, tokens} = GenServer.call(Chargetokens, :all)
-    Enum.map(tokens, 
-      fn {
-        k,v} -> "  <tr>" 
-            <>  "    <td>#{k}</td>"
-            <>  "    <td>#{v.printed}</td>"
-            <>  "    <td>#{v.blocked}</td>"
+    tokens |> Enum.map(
+      fn t -> "  <tr>" 
+            <>  "    <td>#{t.token}</td>"
+            <>  "    <td>#{t.description}</td>"
+            <>  "    <td>#{t.blocked}</td>"
             <>  "  </tr>"
       end)    
   end
 
   defp session_rows() do
     {:ok, sessions} = GenServer.call(Chargesessions, :all)
-    Enum.map(sessions, 
-      fn {
-        k,v} ->  "  <tr>"
-             <>  "    <td>#{k}</td>" 
-             <>  "    <td>#{v.serial}</td>" 
-             <>  "    <td>#{v.idtag}</td>" 
-             <>  "    <td>#{v.starttime}</td>" 
-             <>  "    <td>#{v.endtime}</td>" 
-             <>  "    <td>#{v.volume}</td>" 
-             <>  "    <td>#{v.duration}</td>" 
-             <>  "  </tr>" 
-      end)
+    sessions |> 
+      Enum.map(
+        fn s ->  "  <tr>"
+               <>  "    <td>#{s.transaction_id}</td>" 
+               <>  "    <td>#{s.serial}</td>" 
+               <>  "    <td>#{s.token}</td>" 
+               <>  "    <td>#{s.start_time}</td>" 
+               <>  "    <td>#{s.stop_time}</td>" 
+               <>  "    <td>#{s.volume}</td>" 
+               <>  "    <td>#{s.duration}</td>" 
+               <>  "  </tr>" 
+        end)
   end
 
 
@@ -107,7 +112,7 @@ defmodule DashboardPageHandler do
         <div class="col">
           <div class="panel panel-default">
             <div class="panel-body">
-              #{Enum.count(charger_rows())} Chargers online
+              #{onlineChargers()} Chargers online
             </div>
           </div>
         </div>
@@ -140,8 +145,8 @@ defmodule DashboardPageHandler do
             <div class="panel-body">
                 <table class="table">
                   <tr>
-                    <th>Rfid</th>
-                    <th>Printed Number</th>
+                    <th>Token</th>
+                    <th>Description</th>
                     <th>Blocked</th>
                     #{token_rows()}
                   </tr>
@@ -161,7 +166,7 @@ defmodule DashboardPageHandler do
                   <tr>
                     <th>Transaction Id</th>
                     <th>Serial</th>
-                    <th>Id Tag</th>
+                    <th>Token</th>
                     <th>Start Time</th>
                     <th>Stop Time</th>
                     <th>Volume</th>

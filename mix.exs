@@ -5,6 +5,7 @@ defmodule OcppBackend.Mixfile do
     [app: :ocpp_backend,
      version: "0.0.3",
      elixir: ">= 1.0.0",
+     elixirc_paths: ["lib", "lib/model"],
      deps: deps()]
   end
 
@@ -21,7 +22,7 @@ defmodule OcppBackend.Mixfile do
       { :uuid,        "~> 1.1" },
       { :timex,       "~> 3.0"},
       { :distillery,  "~> 1.0"},
-      { :postgrex,    "0.10.0"},
-      { :ecto,        "~> 1.0"} ]
+      { :postgrex,    "0.13.3"},
+      { :ecto,        "~> 2.2.8"} ]
   end
 end

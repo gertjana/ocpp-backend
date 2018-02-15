@@ -8,14 +8,17 @@ defmodule TokenAuthorisation do
     {:ok, pid}
   end 
 
-  def handle_call({:rfid, rfid}, _sender, state) do
+  def handle_call({:token, token}, _sender, state) do
     {:ok, tokens} = GenServer.call(Chargetokens, :all)
     authorised = 
-      case Map.get(tokens,rfid) do
-        blocked when not blocked -> "Accepted"
-        blocked when blocked     -> "Blocked"
-        nil                      -> "Invalid"
-      end
+    case tokens 
+      |> Enum.filter(fn(t) -> t.token == token end)
+      |> Enum.map(fn(t) -> t.blocked end) do
+        []            -> "Invalid"
+        [ true | _ ]  -> "Blocked"
+        [ false | _ ] -> "Accepted"
+    end
+
     {:reply, authorised, state}
   end
 

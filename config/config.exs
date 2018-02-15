@@ -22,7 +22,7 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-config :ocpp_backend, OcppBackend.Repo,
+config :ocpp_backend, OcppBackendRepo,
   adapter: Ecto.Adapters.Postgres,
   database: "ocpp_backend",
   username: "postgres",

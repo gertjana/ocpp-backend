@@ -11,27 +11,34 @@ defmodule Chargesessions do
 
 # %{id: transactionId, start: meterStart, timestamp: timestamp, idTag: idToken}
 
-  def handle_call({:start, transactionId, serial, idTag, startTime}, _from, chargesessions) do
-    {:reply, :ok, Map.put(chargesessions, transactionId, 
-      %{serial: serial, idtag: idTag, starttime: startTime, endtime: nil, volume: nil, duration: nil})}
+  def handle_call({:start, transactionId, serial, idTag, startTime}, _from, state) do
+    session = %Model.Session{transaction_id: transactionId, serial: serial, token: idTag, start_time: startTime}
+    {:ok, inserted} = OcppBackendRepo.insert(session)
+    {:reply, {:ok, inserted}, state}
   end
 
-  def handle_call({:stop, transactionId, volume, endTime}, _from, chargesessions) do
-    startTime = get_in(chargesessions, [transactionId, :starttime])
-    duration = Timex.diff(
-      Timex.parse!(endTime, "{ISO:Extended}"),
-      Timex.parse!(startTime, "{ISO:Extended}"),
-      :minutes)
+  def handle_call({:stop, transactionId, volume, endTime}, _from, state) do
+    session = getSession(transactionId)
+    startTime = session.start_time
+    duration = Timex.diff(endTime, startTime, :minutes)
 
-    cs2 = put_in(chargesessions[transactionId].volume, volume)
-    cs3 = put_in(cs2[transactionId].endtime, endTime)
-    cs4 = put_in(cs3[transactionId].duration, duration)
+    {:ok, updated} = update(transactionId, %{stop_time: endTime, duration: duration, volume: volume})
 
-    {:reply, :ok, cs4}
+    {:reply, {:ok, updated}, state}
   end
 
-  def handle_call(:all, _from, chargesessions) do
-    {:reply, {:ok, chargesessions}, chargesessions}
+  def handle_call(:all, _from, state) do
+    sessions = Model.Session |> OcppBackendRepo.all()
+    {:reply, {:ok, sessions}, state}
   end
 
+  defp getSession(transactionId) do
+    Model.Session |> OcppBackendRepo.get_by(transaction_id: transactionId)
+  end
+
+  defp update(transactionId, changes) do
+    session = getSession(transactionId)
+    changeset = Model.Session.changeset(session, changes)
+    OcppBackendRepo.update(changeset)
+  end
 end

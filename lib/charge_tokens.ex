@@ -4,33 +4,44 @@ defmodule Chargetokens do
   import Logger
 
   def start_link(_) do 
-    {:ok, pid} = GenServer.start_link(__MODULE__, %{
-      "01020304" => %{blocked: false, printed: "NL-GAS-1234567-X"},
-      "01020305" => %{blocked: true, printed: "NL-GAS-1234568-X"},
-      "01020306" => %{blocked: false, printed: "NL-GAS-1234569-X"}
-      }, name: __MODULE__)
+    {:ok, pid} = GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
     info "Started #{__MODULE__} #{inspect(pid)}"
     {:ok, pid}
   end
 
-  def handle_call({:add, rfid, printed}, _from, chargetokens) do
-    {:reply, :ok, Map.put(chargetokens, rfid,  
-      %{blocked: false, printed: printed})}
+  def handle_call({:add, token, provider, description}, _from, _state) do
+    token = %Model.Token{token: token, provider: provider, description: description}
+    {:ok, inserted} = OcppBackendRepo.insert(token)
+    {:reply, :ok, inserted}
   end
 
-  def handle_call({:remove, rfid}, _from, chargetokens) do
-    {:reply, :ok, Map.delete(chargetokens, rfid)}
+  def handle_call({:remove, token, provider}, _from, state) do
+    {:ok, _} = OcppBackendRepo.delete(getToken(token, provider))
+    {:reply, :ok, state}
   end
 
-  def handle_call(:all, _from, chargetokens) do
-    {:reply, {:ok, chargetokens}, chargetokens}
+  def handle_call(:all, _from, state) do
+    chargetokens = Model.Token |> OcppBackendRepo.all()
+    {:reply, {:ok, chargetokens}, state}
   end
 
-  def handle_call({:block, rfid}, _from, chargetokens) do
-    {:reply, :ok, put_in(chargetokens[rfid].blocked, true)}
+  def handle_call({:block, token, provider}, _from, _state) do
+    {:ok, updated} = updateToken(token, provider, %{blocked: true})
+    {:reply, :ok, updated}
   end
 
-  def handle_call({:unblock, rfid}, _from, chargepoints) do
-    {:reply, :ok, put_in(chargepoints[rfid].blocked, false)}
+  def handle_call({:unblock, token, provider}, _from, _state) do
+    {:ok, updated} = updateToken(token, provider, %{blocked: false})
+    {:reply, :ok, updated}
+  end
+
+  defp updateToken(token, provider, changeset) do
+    token = getToken(token, provider)
+    changeset = Model.Token.changeset(token, changeset)
+    OcppBackendRepo.update(changeset)
+  end
+
+  defp getToken(token, provider) do
+    Model.Token |> OcppBackendRepo.get_by(token: token, provider: provider)
   end
 end

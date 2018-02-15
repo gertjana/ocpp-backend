@@ -8,7 +8,7 @@ defmodule OcppBackend.Supervisor do
   def init(_) do
 
     children =  [
-      worker(OcppBackend.Repo, []),
+      worker(OcppBackendRepo, []),
       OcppMessages,
       TokenAuthorisation,
       Chargepoints,
