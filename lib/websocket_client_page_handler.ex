@@ -99,13 +99,13 @@ defmodule WebsocketClientPageHandler do
         <div> 
           message:<select id="messageSelect" onchange="selectMessage();">
             <option value=''></option>
-            <option value='[2, "42", "BootNotification", {"chargeBoxSerialNumber": "01234567", "chargePointModel":"Lolo4"}]'>BootNotification</option>
+            <option value='[2, "42", "BootNotification", {"chargeBoxSerialNumber": "01234567", "chargePointModel":"Lolo4", "chargePointVendor":"NewMotion"}]'>BootNotification</option>
             <option value='[2, "42", "Heartbeat",{}]'>Heartbeat</option>
-            <option value='[2, "42", "DataTransfer",{"vendorId":"magnumcap","messageId":"StateOfCharge","data":"48"}]'>DataTransfer</option>
-            <option value='[2, "42", "StatusNotification",{"connectorId":"1","errorCode":"0","status":"Charging"}]'>StatusNotification</option>
-            <option value='[2, "42", "Authorize", {"idTag":"0102030405060708"}]'>Authorize</option>
-            <option value='[2, "42", "StartTransaction", {"connectorId":"0", "idTag":"0102030405060708", "meterStart": 2000, "timestamp":"#{Utils.datetime_as_string}"}]'>StartTransaction</option>
-            <option value='[2, "42", "StopTransaction", {"idTag":"0102030405060708", "meterStop": 2140, "timestamp":"#{Utils.datetime_as_string(36)}"}]'>StopTransaction</option>
+            <option value='[2, "42", "DataTransfer",{"vendorId":"MagnumCap","messageId":"StateOfCharge","data":"{\"meterValue\":42, \"transacionId\":23424}"}]'>DataTransfer</option>
+            <option value='[2, "42", "StatusNotification",{"connectorId":1,"errorCode":"0","status":"Charging"}]'>StatusNotification</option>
+            <option value='[2, "42", "Authorize", {"idTag":"01020304"}]'>Authorize</option>
+            <option value='[2, "42", "StartTransaction", {"connectorId":1, "transactionId":6, "idTag":"01020304", "meterStart": 2000, "timestamp":"#{Utils.datetime_as_string}"}]'>StartTransaction</option>
+            <option value='[2, "42", "StopTransaction", {"idTag":"01020304", "transactionId":6, "meterStop": 2140, "timestamp":"#{Utils.datetime_as_string}"}]'>StopTransaction</option>
           </select>
         </div>
         <div>

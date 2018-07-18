@@ -22,7 +22,7 @@ defmodule Chargepoints do
   end
 
   def handle_call({:unsubscribe, serial}, _from, _state) do
-    {:ok, updated} = update(serial, %{status: "Offline"})
+    {:ok, updated} = update(serial, %{status: "Offline", pid: ""})
     {:reply, :ok, updated}
   end
 

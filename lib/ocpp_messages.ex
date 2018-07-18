@@ -11,19 +11,29 @@ defmodule OcppMessages do
     {:ok, pid}
   end 
 
+  def handle_call({[2, id, "Authorize",%{"idTag" => idToken}], state}, _sender, current_state) do
+    notificationStatus = GenServer.call(TokenAuthorisation, {:token, idToken})
+    {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: notificationStatus, idToken: idToken]]])
+    {:reply, {{:text, reply}, state}, current_state}
+  end
+
   def handle_call({[2, id, "BootNotification", _], state}, _sender, current_state) do
     {:ok, reply} = JSX.encode([3,id, [status: "Pending", currentTime: Utils.datetime_as_string, interval: 300]])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "StatusNotification", %{"status" => status}], state}, _sender, current_state) do
-    GenServer.call(Chargepoints, {:status, status, state.serial})
-    {:ok, reply} = JSX.encode([3,id, []])
+  def handle_call({[2, id, "DataTransfer",%{"vendorId" => _vendorId}], state}, _sender, current_state) do
+    {:ok, reply} = JSX.encode([3, id, [status: "Rejected", data: "Not Implemented"]])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "CancelReservation", _], state}, _sender, current_state) do
-    {:ok, reply} = JSX.encode([3,id, [status: "Accepted"]])
+  def handle_call({[2,id, "DiagnosticsStatusNotification", %{"status" => _diagStatus}], state}, _sender, current_state) do
+    {:ok, reply} = JSX.encode([3, id, []])
+    {:reply, {{:text, reply}, state}, current_state}
+  end 
+
+  def handle_call({[2,id, "FirmwareStatusNotification", %{"status" => _firmwareStatus}], state}, _sender, current_state) do
+    {:ok, reply} = JSX.encode([3, id, []])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
@@ -32,9 +42,14 @@ defmodule OcppMessages do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "Authorize",%{"idTag" => idToken}], state}, _sender, current_state) do
-    notificationStatus = GenServer.call(TokenAuthorisation, {:token, idToken})
-    {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: notificationStatus, idToken: idToken]]])
+  def handle_call({[2, id, "MeterValues", %{"connectorId" => _connectorId, "transactionId" => _transactionId, "meterValue" => _meterValues}], state}, _sender, current_state) do
+    {:ok, reply} = JSX.encode([3, id, []])
+    {:reply, {{:text, reply}, state}, current_state}
+  end
+
+  def handle_call({[2, id, "StatusNotification", %{"status" => status}], state}, _sender, current_state) do
+    GenServer.call(Chargepoints, {:status, status, state.serial})
+    {:ok, reply} = JSX.encode([3,id, []])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
@@ -80,11 +95,6 @@ defmodule OcppMessages do
         {:ok, reply} = JSX.encode([4, id, "Transaction not started", "you can't stop a transaction that hasn't been started"])
         {:reply, {{:text, reply}, state}, current_state}
     end
-  end
-
-  def handle_call({[2, id, "DataTransfer",%{"vendorId" => _vendorId}], state}, _sender, current_state) do
-    {:ok, reply} = JSX.encode([3, id, [status: "Rejected", data: "Not Implemented"]])
-    {:reply, {{:text, reply}, state}, current_state}
   end
 
   #fallback handler, valid json, but we do not yet understand it
