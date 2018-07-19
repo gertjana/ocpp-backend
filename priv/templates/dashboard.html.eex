@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= onlineChargers %> Chargers online
+      </div>
+    </div>
+  </div>
+</row> 
+<div class="row">
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Chargers</h3>
+      </div>
+      <div class="panel-body">
+        <%= Utils.renderFragment("chargers_table.html", [chargers: chargers]) %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Tokens</h3>
+      </div>
+      <div class="panel-body">
+        <%= Utils.renderFragment("tokens_table.html", [tokens: tokens]) %>
+      </div>
+    </div>
+  </div>
+</div>  
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Sessions</h3>
+      </div>
+      <div class="panel-body">
+        <%= Utils.renderFragment("sessions_table.html", [sessions: sessions]) %>
+      </div>
+    </div>
+  </div>
+</div>

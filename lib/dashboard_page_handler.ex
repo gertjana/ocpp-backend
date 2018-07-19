@@ -44,152 +44,31 @@ defmodule DashboardPageHandler do
       |> Enum.count      
   end
 
-  defp charger_rows() do 
+  defp chargers() do 
     {:ok, chargers} = GenServer.call(Chargepoints, :subscribers)
-    chargers |> Enum.map( 
-      fn c -> "  <tr>" 
-            <>  "    <td>#{c.serial}</td>"
-            <>  "    <td>#{c.pid}<td>"
-            <>  "    <td>#{c.status}</td>"
-            <>  "    <td>#{c.connected}</td>"
-            <>  "    <td>#{c.last_seen}</td>"
-            <>  "  </tr>"
-      end)
+    chargers
   end
 
-  defp token_rows() do
+  defp tokens() do
     {:ok, tokens} = GenServer.call(Chargetokens, :all)
-    tokens |> Enum.map(
-      fn t -> "  <tr>" 
-            <>  "    <td>#{t.token}</td>"
-            <>  "    <td>#{t.description}</td>"
-            <>  "    <td>#{t.blocked}</td>"
-            <>  "  </tr>"
-      end)    
+    tokens
   end
 
-  defp session_rows() do
+  defp sessions() do
     {:ok, sessions} = GenServer.call(Chargesessions, :all)
-    sessions |> 
-      Enum.map(
-        fn s ->  "  <tr>"
-               <>  "    <td>#{s.transaction_id}</td>" 
-               <>  "    <td>#{s.serial}</td>" 
-               <>  "    <td>#{s.token}</td>" 
-               <>  "    <td>#{s.start_time}</td>" 
-               <>  "    <td>#{s.stop_time}</td>" 
-               <>  "    <td>#{s.volume}</td>" 
-               <>  "    <td>#{s.duration}</td>" 
-               <>  "  </tr>" 
-        end)
+    sessions
   end
 
-
-  defp build_body(_request) do    
-"""
-<!DOCTYPE html> 
-<html>
-  <head>
-    <title>Chargers</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <title>Chargers</title>
-    <style>
-      div.jumbotron {
-        padding-left:20px;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="jumbotron">
-      <h1>Charger Backend</h1> 
-      <p>An OCPP 1.6 backend built in Elixir</p> 
-    </div>          
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <div class="panel panel-default">
-            <div class="panel-body">
-              #{onlineChargers()} Chargers online
-            </div>
-          </div>
-        </div>
-      </row> 
-      <div class="row">
-        <div class="col-md-8">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Chargers</h3>
-            </div>
-            <div class="panel-body">
-                <table class="table">
-                  <tr>
-                    <th>Serial</th>
-                    <th>PID</th>
-                    <th>Status</th>
-                    <th>Connected</th>
-                    <th>Last seen</th>
-                    #{charger_rows()}
-                  </tr>
-                </table>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Tokens</h3>
-            </div>
-            <div class="panel-body">
-                <table class="table">
-                  <tr>
-                    <th>Token</th>
-                    <th>Description</th>
-                    <th>Blocked</th>
-                    #{token_rows()}
-                  </tr>
-                </table>
-            </div>
-          </div>
-        </div>
-      </div>  
-      <div class="row">
-        <div class="col-md-12">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Sessions</h3>
-            </div>
-            <div class="panel-body">
-                <table class="table">
-                  <tr>
-                    <th>Transaction Id</th>
-                    <th>Serial</th>
-                    <th>Token</th>
-                    <th>Start Time</th>
-                    <th>Stop Time</th>
-                    <th>Volume</th>
-                    <th>Duration</th>
-                  </tr>
-                  #{session_rows()}
-                </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/static/js/bootstrap.min.js"></script>    
-  </body>
-</html>
-"""
+  def build_body(_request) do  
+    Utils.renderPage("dashboard.html", "Dashboard", [
+        onlineChargers: onlineChargers(),
+        chargers: chargers(),
+        tokens: tokens(),
+        sessions: sessions()
+      ])
   end
+
 end
 
 
 
-      #   </div>
-      # </div>

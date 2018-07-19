@@ -1,0 +1,22 @@
+<table class="table">
+  <tr>
+    <th>Transaction Id</th>
+    <th>Serial</th>
+    <th>Token</th>
+    <th>Start Time</th>
+    <th>Stop Time</th>
+    <th>Volume</th>
+    <th>Duration</th>
+  </tr>
+    <%= Enum.map(sessions, fn s -> %>
+      <tr> 
+        <td><%= s.transaction_id%></td>
+        <td><%= s.serial%><td>
+        <td><%= s.token%></td>
+        <td><%= s.start_time %></td>
+        <td><%= s.stop_time %></td>
+        <td><%= s.volume %></td>
+        <td><%= s.duration %></td>
+      </tr>
+    <% end) %>
+</table>
