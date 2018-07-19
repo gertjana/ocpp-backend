@@ -12,7 +12,8 @@ defmodule OcppBackend.Mixfile do
   def application do
     [
       mod: { OcppBackend, [] },
-      applications: [:cowboy, :ranch, :timex, :postgrex, :ecto]
+      applications: [:cowboy, :ranch, :timex, :postgrex, :ecto],
+      included_applications:  [:exjsx, :uuid]
     ]
   end
 
@@ -20,9 +21,9 @@ defmodule OcppBackend.Mixfile do
     [ { :cowboy, github: "ninenines/cowboy", tag: "2.0.0-pre.3" },
       { :exjsx,       "~> 3.0.0" },
       { :uuid,        "~> 1.1" },
-      { :timex,       "~> 3.0"},
-      { :distillery,  "~> 1.0"},
-      { :postgrex,    "0.13.3"},
-      { :ecto,        "~> 2.2.8"} ]
+      { :timex,       "~> 3.0" },
+      { :distillery,  "~> 1.0" },
+      { :postgrex,    "0.13.3" },
+      { :ecto,        "~> 2.2.8" } ]
   end
 end
