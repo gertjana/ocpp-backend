@@ -5,8 +5,5 @@ otp_release: '19.0'
 env:
  global:
    - MIX_ENV=test
-before_script:
-  - mkdir tmp
-  - git clone https://github.com/elixir-lang/elixir.git tmp/elixir --branch v1.4
 script:
-  - mix credo tmp/elixir/lib
+  - mix credo test
