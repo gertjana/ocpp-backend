@@ -6,4 +6,5 @@ env:
  global:
    - MIX_ENV=test
 script:
-  - mix credo test
+  - mix test
+  - mix credo
