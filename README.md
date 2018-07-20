@@ -1,5 +1,6 @@
 OCPP 1.6 Backend
 ===================
+[![Build Status](https://travis-ci.org/gertjana/ocpp16-backend.svg?branch=master)](https://travis-ci.org/gertjana/ocpp16-backend)
 
 Start of an OCPP 1.6 compatible backend in Elixir using Cowboy
 
