@@ -1,9 +1,14 @@
 
 defmodule DashboardPageHandler do
  
+@moduledoc """
+  Render the dashboard (landing page)
+ """
+ 
   def init(req, state) do
     handle(req, state)
   end
+
 
   def handle(request, state) do
     # construct a reply, using the cowboy_req:reply/4 function.
@@ -19,7 +24,7 @@ defmodule DashboardPageHandler do
       200,
 
       # headers
-      [ {"content-type", "text/html"} ],
+      [{"content-type", "text/html"}],
 
       # body of reply.
       build_body(request),
@@ -37,7 +42,7 @@ defmodule DashboardPageHandler do
     :ok
   end
 
-  defp onlineChargers do
+  defp online_chargers() do
     {:ok, chargers} = GenServer.call(Chargepoints, :subscribers)
     chargers 
       |> Enum.filter(fn x -> x.status != "Offline" end)
@@ -61,7 +66,7 @@ defmodule DashboardPageHandler do
 
   def build_body(_request) do  
     Utils.renderPage("dashboard.html", "Dashboard", [
-        onlineChargers: onlineChargers(),
+        onlineChargers: online_chargers(),
         chargers: chargers(),
         tokens: tokens(),
         sessions: sessions()

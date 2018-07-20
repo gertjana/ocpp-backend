@@ -3,6 +3,10 @@ defmodule Chargepoints do
   use Agent
   import Logger
 
+@moduledoc """
+  Provides access to charge points
+ """
+ 
   def start_link(_) do 
     {:ok, pid} = GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
     info "Started #{__MODULE__} #{inspect(pid)}"
@@ -12,7 +16,7 @@ defmodule Chargepoints do
   def handle_call({:subscribe, serial, pid}, _from, _state) do
     case getChargerBySerial(serial) do
       nil -> 
-        charger = %Model.Charger{serial: serial, pid: inspect(pid), status: "Available", connected: Timex.now, last_seen: Timex.now }
+        charger = %Model.Charger{serial: serial, pid: inspect(pid), status: "Available", connected: Timex.now, last_seen: Timex.now}
         {:ok, inserted} = OcppBackendRepo.insert(charger)
         {:reply, :ok, inserted}
       _charger ->

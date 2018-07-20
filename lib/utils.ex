@@ -1,6 +1,10 @@
 defmodule Utils do
   use Timex
 
+@moduledoc """
+  Utility functions
+ """
+ 
   @spec time_as_string() :: String.t()
   def time_as_string do
     {hh, mm, ss} = :erlang.time()

@@ -11,28 +11,28 @@ defmodule OcppMessages do
     {:ok, pid}
   end 
 
-  def handle_call({[2, id, "Authorize",%{"idTag" => idToken}], state}, _sender, current_state) do
-    notificationStatus = GenServer.call(TokenAuthorisation, {:token, idToken})
-    {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: notificationStatus, idToken: idToken]]])
+  def handle_call({[2, id, "Authorize", %{"idTag" => id_token}], state}, _sender, current_state) do
+    notification_status = GenServer.call(TokenAuthorisation, {:token, id_token})
+    {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: notification_status, idToken: id_token]]])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
   def handle_call({[2, id, "BootNotification", _], state}, _sender, current_state) do
-    {:ok, reply} = JSX.encode([3,id, [status: "Pending", currentTime: Utils.datetime_as_string, interval: 300]])
+    {:ok, reply} = JSX.encode([3, id, [status: "Pending", currentTime: Utils.datetime_as_string, interval: 300]])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "DataTransfer",%{"vendorId" => _vendorId}], state}, _sender, current_state) do
+  def handle_call({[2, id, "DataTransfer", %{"vendorId" => _vendorId}], state}, _sender, current_state) do
     {:ok, reply} = JSX.encode([3, id, [status: "Rejected", data: "Not Implemented"]])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2,id, "DiagnosticsStatusNotification", %{"status" => _diagStatus}], state}, _sender, current_state) do
+  def handle_call({[2, id, "DiagnosticsStatusNotification", %{"status" => _diagStatus}], state}, _sender, current_state) do
     {:ok, reply} = JSX.encode([3, id, []])
     {:reply, {{:text, reply}, state}, current_state}
   end 
 
-  def handle_call({[2,id, "FirmwareStatusNotification", %{"status" => _firmwareStatus}], state}, _sender, current_state) do
+  def handle_call({[2, id, "FirmwareStatusNotification", %{"status" => _firmwareStatus}], state}, _sender, current_state) do
     {:ok, reply} = JSX.encode([3, id, []])
     {:reply, {{:text, reply}, state}, current_state}
   end
@@ -49,43 +49,42 @@ defmodule OcppMessages do
 
   def handle_call({[2, id, "StatusNotification", %{"status" => status}], state}, _sender, current_state) do
     GenServer.call(Chargepoints, {:status, status, state.serial})
-    {:ok, reply} = JSX.encode([3,id, []])
+    {:ok, reply} = JSX.encode([3, id, []])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "StartTransaction", %{"connectorId" => _, "idTag" => idTag, "meterStart" => meterStart, "timestamp" => timestamp}], state}, _sender, current_state) do
-    case state do
+  def handle_call({[2, id, "StartTransaction", %{"connectorId" => _, "idTag" => id_tag, "meterStart" => meter_start, "timestamp" => timestamp}], state}, _sender, current_state) do
+    case state do 
       %{:currentTransaction => _} ->
         {:ok, reply} = JSX.encode([4, id, "Transaction Already started", "A session is still undergoing on this chargepoint"])  
         {:reply, {{:text, reply}, state}, current_state}
       _ -> 
-        {state, transactionId} =  next_transaction_id(state)
-        state = Map.put(state, :currentTransaction, %{id: transactionId, start: meterStart, timestamp: timestamp, idTag: idTag})
+        {state, transaction_id} =  next_transaction_id(state)
+        state = Map.put(state, :currentTransaction, %{id: transaction_id, start: meter_start, timestamp: timestamp, idTag: id_tag})
 
 
         {:ok, start_time} = Timex.parse(timestamp, "{ISO:Extended}")
 
-        GenServer.call(Chargesessions, {:start, transactionId, state.serial, idTag, start_time})
+        GenServer.call(Chargesessions, {:start, transaction_id, state.serial, id_tag, start_time})
 
-        {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idTag], transactionId: transactionId]])
+        {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: id_tag], transactionId: transaction_id]])
         {:reply, {{:text, reply}, state}, current_state}
     end 
   end
 
-  def handle_call({[2, id, "StopTransaction", %{"idTag" => idTag, "meterStop" => meterStop, "timestamp" => timestamp}], state}, _sender, current_state) do
+  def handle_call({[2, id, "StopTransaction", %{"idTag" => id_tag, "meterStop" => meter_stop, "timestamp" => timestamp}], state}, _sender, current_state) do
     case state do
-      %{:currentTransaction => currentTransaction} ->
-        case Map.get(currentTransaction, :idTag) do
-          tag when tag == idTag ->
-            volume = meterStop - Map.get(currentTransaction, :start)
-            IO.inspect(volume)
-            transactionId = Map.get(currentTransaction, :id)
+      %{:currentTransaction => current_transaction} ->
+        case Map.get(current_transaction, :idTag) do
+          tag when tag == id_tag ->
+            volume = meter_stop - Map.get(current_transaction, :start)
+            transaction_id = Map.get(current_transaction, :id)
             {:ok, stop_time} = Timex.parse(timestamp, "{ISO:Extended}")
 
-            GenServer.call(Chargesessions, {:stop, transactionId, volume, stop_time})
+            GenServer.call(Chargesessions, {:stop, transaction_id, volume, stop_time})
 
             state = Map.delete(state, :currentTransaction)
-            {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: idTag]]])
+            {:ok, reply} = JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: id_tag]]])
             {:reply, {{:text, reply}, state}, current_state}
           _ ->
             {:ok, reply} = JSX.encode([4, id, "Transaction not stopped", "you can only stop a transaction with the same idtag"])

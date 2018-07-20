@@ -2,6 +2,10 @@ defmodule Model.Session do
   use Ecto.Schema
   import Ecto.Changeset
   
+  @moduledoc """
+    Session Model
+  """
+
   schema "session" do
     field :transaction_id,  :string
     field :serial,           :string

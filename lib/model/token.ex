@@ -2,6 +2,10 @@ defmodule Model.Token do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @moduledoc """
+    Token Model
+  """
+
   schema "token" do
     field :token,       :string
     field :provider,    :string

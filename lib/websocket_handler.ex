@@ -1,7 +1,10 @@
 defmodule WebsocketHandler do
   @behaviour :cowboy_websocket
+  @moduledoc """
+  Handles websocket connections and negiotiating ocpp protocol (only 1.6 supported so far)
+ """
   import Logger
-
+ 
   def init(req, _state) do
     info "Initializing WebSocketconnection for #{inspect(self())}"
     case Enum.member?(:cowboy_req.parse_header("sec-websocket-protocol", req), "ocpp1.6") do

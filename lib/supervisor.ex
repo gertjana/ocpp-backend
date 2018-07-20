@@ -1,6 +1,10 @@
 defmodule OcppBackend.Supervisor do
   use Supervisor
 
+  @moduledoc """
+    Supervises all modules in the application
+  """
+  
   def start_link() do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end

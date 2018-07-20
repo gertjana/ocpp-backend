@@ -2,6 +2,10 @@ defmodule Model.Charger do
   use Ecto.Schema
   import Ecto.Changeset
   
+  @moduledoc """
+    Charger Model
+  """
+
   schema "charger" do
     field :serial,    :string
     field :pid,       :string

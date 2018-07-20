@@ -1,24 +1,11 @@
 defmodule OcppBackend do
   import Logger
   import Utils
-  @doc """
-  Start up a cowboy http server.  The start_http method of cowboy takes
-  four arguments:
-    * The protocol of the server
-    * "NbAcceptors" - a non-negative-integer. the number of Accepter processes
-    * TCP options for Ranch as a list of tuples.  In this case the one one
-      we are using is :port, to set the server listening on port 8080.
-      You could also, for example, set ipv6, timeouts, and a number of other things here.
-      SEE ALSO: http://ninenines.eu/docs/en/ranch/1.2/manual/ranch_tcp/
-    * Protocol options for cowboy as a list of tuples.  This can be a very big
-      structure because it includes you "middleware environment", which among
-      other things includes your entire routing table. Here that is the only option
-      we are specifying.
-      SEE ALSO: http://ninenines.eu/docs/en/cowboy/1.0/manual/cowboy_protocol/
-
-  SEE ALSO: http://ninenines.eu/docs/en/cowboy/1.0/guide/getting_started/
+  
+  @moduledoc """
+    Main entrypoint of the Application
   """
-#  def start(_type, _args) do
+
   def start(_type, _args) do
 
     port = System.get_env("PORT") 
@@ -28,17 +15,17 @@ defmodule OcppBackend do
     info "Starting OCPP Backend application on #{port}"
 
     dispatch_config = build_dispatch_config()
-    { :ok, _ } = :cowboy.start_http(:http,
+    {:ok, _} = :cowboy.start_http(:http,
                                     32, #4096
                                    [{:port, port}],
-                                   [{ :env, [{:dispatch, dispatch_config}]}]
+                                   [{:env, [{:dispatch, dispatch_config}]}]
                                    )
     OcppBackend.Supervisor.start_link
   end
 
   def build_dispatch_config do
     :cowboy_router.compile([
-      { :_,
+      {:_,
         [
           {"/static/[...]", :cowboy_static, {:priv_dir,  :ocpp_backend, "static_files"}},
           {"/client", WebsocketClientPageHandler, []},
