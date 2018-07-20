@@ -1,10 +1,10 @@
 defmodule ChargerPageHandler do
   import Logger
 
-@moduledoc """
-  Renders Page for a single charger
- """
- 
+  @moduledoc """
+    Renders Page for a single charger
+  """
+
   def init(req, state) do
     handle(req, state)
   end
@@ -23,14 +23,11 @@ defmodule ChargerPageHandler do
     :ok
   end
 
-  def build_body(request) do 
+  def build_body(request) do
   	serial = :cowboy_req.binding(:serial, request)
-  	info "got me a #{serial}"
   	{:ok, charger} = GenServer.call(Chargepoints, {:subscriber, serial})
     Utils.renderPage("charger_page.html", "Charger #{serial}", [
         charger: charger
       ])
   end
 end
-  	
-  	

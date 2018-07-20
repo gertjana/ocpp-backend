@@ -2,12 +2,13 @@ defmodule Chargepoints do
   use GenServer
   use Agent
   import Logger
+  alias Model.Charger, as: Charger
 
-@moduledoc """
-  Provides access to charge points
- """
- 
-  def start_link(_) do 
+  @moduledoc """
+    Provides access to charge points
+  """
+
+  def start_link(_) do
     {:ok, pid} = GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
     info "Started #{__MODULE__} #{inspect(pid)}"
     {:ok, pid}
@@ -15,8 +16,12 @@ defmodule Chargepoints do
 
   def handle_call({:subscribe, serial, pid}, _from, _state) do
     case getChargerBySerial(serial) do
-      nil -> 
-        charger = %Model.Charger{serial: serial, pid: inspect(pid), status: "Available", connected: Timex.now, last_seen: Timex.now}
+      nil ->
+        charger = %Charger{serial: serial,
+                                 pid: inspect(pid),
+                                 status: "Available",
+                                 connected: Timex.now,
+                                 last_seen: Timex.now}
         {:ok, inserted} = OcppBackendRepo.insert(charger)
         {:reply, :ok, inserted}
       _charger ->
@@ -27,7 +32,7 @@ defmodule Chargepoints do
 
   def handle_call({:subscriber, serial}, _from, state) do
     charger = getChargerBySerial(serial)
-    {:reply, {:ok, charger}, state}  
+    {:reply, {:ok, charger}, state}
   end
 
   def handle_call({:unsubscribe, serial}, _from, _state) do
@@ -36,7 +41,7 @@ defmodule Chargepoints do
   end
 
   def handle_call(:subscribers, _from, state) do
-    chargepoints = Model.Charger |> OcppBackendRepo.all()
+    chargepoints = Charger |> OcppBackendRepo.all()
     {:reply, {:ok, chargepoints}, state}
   end
 
@@ -51,13 +56,12 @@ defmodule Chargepoints do
   end
 
   def getChargerBySerial(serial) do
-    Model.Charger |> OcppBackendRepo.get_by(serial: serial)
+    Charger |> OcppBackendRepo.get_by(serial: serial)
   end
 
   defp update(serial, changes) do
     charger = getChargerBySerial(serial)
-    changeset = Model.Charger.changeset(charger, changes)
+    changeset = Charger.changeset(charger, changes)
     OcppBackendRepo.update(changeset)
   end
-
 end

@@ -4,7 +4,7 @@ defmodule Utils do
 @moduledoc """
   Utility functions
  """
- 
+
   @spec time_as_string() :: String.t()
   def time_as_string do
     {hh, mm, ss} = :erlang.time()
@@ -14,14 +14,14 @@ defmodule Utils do
 
   @spec datetime_as_string() :: String.t()
   def datetime_as_string do
-    {:ok, result} = Timex.now 
+    {:ok, result} = Timex.now
                     |> Timex.format("{ISO:Extended}")
-    result 
+    result
   end
 
   @spec datetime_as_string(integer) :: String.t()
   def datetime_as_string(shift_minutes) do
-    {:ok, result} = Timex.now 
+    {:ok, result} = Timex.now
                     |> Timex.shift(minutes: shift_minutes)
                     |> Timex.format("{ISO:Extended}")
   	result
@@ -43,10 +43,10 @@ defmodule Utils do
       title: title,
       content: content
       ])
-  end 
+  end
 
   def renderFragment(filename, bindings) do
     basedir = "#{Path.expand(__DIR__)}/../priv/templates/"
-    EEx.eval_file("#{basedir}#{filename}.eex", bindings)    
+    EEx.eval_file("#{basedir}#{filename}.eex", bindings)
   end
 end

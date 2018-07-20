@@ -1,7 +1,7 @@
 defmodule Model.Session do
   use Ecto.Schema
   import Ecto.Changeset
-  
+
   @moduledoc """
     Session Model
   """
@@ -20,6 +20,15 @@ defmodule Model.Session do
 
   def changeset(session, params \\ %{}) do
     session
-    	|> cast(params, [:transaction_id, :serial, :token, :start_time, :stop_time, :volume, :duration])
+    	|> cast(params, [
+              :transaction_id,
+              :serial,
+              :token,
+              :start_time,
+              :stop_time,
+              :volume,
+              :duration
+            ]
+          )
   end
 end

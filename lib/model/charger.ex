@@ -1,7 +1,7 @@
 defmodule Model.Charger do
   use Ecto.Schema
   import Ecto.Changeset
-  
+
   @moduledoc """
     Charger Model
   """

@@ -1,15 +1,15 @@
 defmodule OcppBackend do
   import Logger
   import Utils
-  
+
   @moduledoc """
     Main entrypoint of the Application
   """
 
   def start(_type, _args) do
 
-    port = System.get_env("PORT") 
-            |> default("8383") 
+    port = System.get_env("PORT")
+            |> default("8383")
             |> String.to_integer
 
     info "Starting OCPP Backend application on #{port}"
@@ -34,7 +34,5 @@ defmodule OcppBackend do
           {"/ocppws/:serial", WebsocketHandler, []}
       ]}
     ])
-
   end
-
 end
