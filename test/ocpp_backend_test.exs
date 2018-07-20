@@ -20,79 +20,79 @@ defmodule OcppBackendTest do
     default_str
   end 
 
-  test "BootNotification" do
-    id = UUID.uuid1()
+  # test "BootNotification" do
+  #   id = UUID.uuid1()
 
-    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("BootNotificationReq",id)}, :cowboy_req, %{})
-    {:ok, received } = JSX.decode(reply)
+  #   {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("BootNotificationReq",id)}, :cowboy_req, %{})
+  #   {:ok, received } = JSX.decode(reply)
 
-    assert 3 == hd(received)
-    assert id == hd(tl(received))
-    assert "Pending" == Map.get(hd(tl(tl(received))),"status")
-    assert 300 == Map.get(hd(tl(tl(received))),"interval")
-    assert Map.has_key?(hd(tl(tl(received))), "currentTime")
-  end
+  #   assert 3 == hd(received)
+  #   assert id == hd(tl(received))
+  #   assert "Pending" == Map.get(hd(tl(tl(received))),"status")
+  #   assert 300 == Map.get(hd(tl(tl(received))),"interval")
+  #   assert Map.has_key?(hd(tl(tl(received))), "currentTime")
+  # end
 
-  test "Heartbeat" do
-    id = UUID.uuid1()
+  # test "Heartbeat" do
+  #   id = UUID.uuid1()
 
-    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("HeartbeatReq",id)}, :cowboy_req, %{})
-    {:ok, received } = JSX.decode(reply)
+  #   {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("HeartbeatReq",id)}, :cowboy_req, %{})
+  #   {:ok, received } = JSX.decode(reply)
 
-    assert 3 == hd(received)
-    assert id == hd(tl(received))
-    assert Map.has_key?(hd(tl(tl(received))), "currentTime")
-  end
+  #   assert 3 == hd(received)
+  #   assert id == hd(tl(received))
+  #   assert Map.has_key?(hd(tl(tl(received))), "currentTime")
+  # end
 
-  test "Authorize" do
-    id = UUID.uuid1()
+  # test "Authorize" do
+  #   id = UUID.uuid1()
 
-    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("AuthorizeReq",id)}, :cowboy_req, %{})
+  #   {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("AuthorizeReq",id)}, :cowboy_req, %{})
 
-    {:ok, message} = JSX.decode(m("AuthorizeConf", id))
-    assert  {:ok, message} == JSX.decode(reply)
-  end
+  #   {:ok, message} = JSX.decode(m("AuthorizeConf", id))
+  #   assert  {:ok, message} == JSX.decode(reply)
+  # end
 
-  test "CancelReservation" do
-    id = UUID.uuid1()
+  # test "CancelReservation" do
+  #   id = UUID.uuid1()
 
-    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("CancelReservationReq",id)}, :cowboy_req, %{})
-    {:ok, received } = JSX.decode(reply)
+  #   {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("CancelReservationReq",id)}, :cowboy_req, %{})
+  #   {:ok, received } = JSX.decode(reply)
 
-    assert 3 == hd(received)
-    assert id == hd(tl(received))
-    assert "Accepted" == Map.get(hd(tl(tl(received))), "status")
-  end
+  #   assert 3 == hd(received)
+  #   assert id == hd(tl(received))
+  #   assert "Accepted" == Map.get(hd(tl(tl(received))), "status")
+  # end
 
 
-  test "StartTransaction" do
-    id = UUID.uuid1()
-    state = %{serial: "0400030", id: 0}
+  # test "StartTransaction" do
+  #   id = UUID.uuid1()
+  #   state = %{serial: "0400030", id: 0}
 
-    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("StartTransactionReq",id)}, :cowboy_req, state)
-    {:ok, received } = JSX.decode(reply)
+  #   {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("StartTransactionReq",id)}, :cowboy_req, state)
+  #   {:ok, received } = JSX.decode(reply)
 
-    assert 3 == hd(received)
-    assert id == hd(tl(received))
-    assert "0400030_1" == Map.get(hd(tl(tl(received))), "transactionId")
+  #   assert 3 == hd(received)
+  #   assert id == hd(tl(received))
+  #   assert "0400030_1" == Map.get(hd(tl(tl(received))), "transactionId")
 
-    idTagInfo = Map.get(hd(tl(tl(received))), "idTagInfo")
-    assert Map.has_key?(idTagInfo, "idToken")
-    assert "Accepted" == Map.get(idTagInfo, "status")
-  end
+  #   idTagInfo = Map.get(hd(tl(tl(received))), "idTagInfo")
+  #   assert Map.has_key?(idTagInfo, "idToken")
+  #   assert "Accepted" == Map.get(idTagInfo, "status")
+  # end
 
-  test "StopTransaction" do
-    id = UUID.uuid1()
-    state = %{serial: "0400030", id: 1, currentTransaction: %{id: "0400030_1", start: 2000, timestamp: now(), idTag: "0102030405060708"}}
-    {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("StopTransactionReq",id)}, :cowboy_req, state)
-    {:ok, received } = JSX.decode(reply)
+  # test "StopTransaction" do
+  #   id = UUID.uuid1()
+  #   state = %{serial: "0400030", id: 1, currentTransaction: %{id: "0400030_1", start: 2000, timestamp: now(), idTag: "0102030405060708"}}
+  #   {:reply, {:text, reply}, _, _} = WebsocketHandler.websocket_handle({:text, m("StopTransactionReq",id)}, :cowboy_req, state)
+  #   {:ok, received } = JSX.decode(reply)
 
-    assert 3 == hd(received)
-    assert id == hd(tl(received))
+  #   assert 3 == hd(received)
+  #   assert id == hd(tl(received))
 
-    idTagInfo = Map.get(hd(tl(tl(received))), "idTagInfo")
-    assert Map.has_key?(idTagInfo, "idToken")
-    assert "Accepted" == Map.get(idTagInfo, "status")
-  end
+  #   idTagInfo = Map.get(hd(tl(tl(received))), "idTagInfo")
+  #   assert Map.has_key?(idTagInfo, "idToken")
+  #   assert "Accepted" == Map.get(idTagInfo, "status")
+  # end
 
 end
