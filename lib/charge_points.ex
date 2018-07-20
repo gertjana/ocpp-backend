@@ -21,6 +21,11 @@ defmodule Chargepoints do
     end
   end
 
+  def handle_call({:get, serial}, _from, _state) do
+    {:ok, charger} = getChargerBySerial(serial)
+    {:reply, :ok, charger}  
+  end
+
   def handle_call({:unsubscribe, serial}, _from, _state) do
     {:ok, updated} = update(serial, %{status: "Offline", pid: ""})
     {:reply, :ok, updated}

@@ -43,6 +43,7 @@ defmodule OcppBackend do
           {"/static/[...]", :cowboy_static, {:priv_dir,  :ocpp_backend, "static_files"}},
           {"/client", WebsocketClientPageHandler, []},
           {"/chargers", DashboardPageHandler, []},
+          {"/chargers/:serial", ChargerPageHandler, []},
           {"/ocppws/:serial", WebsocketHandler, []}
       ]}
     ])
