@@ -20,6 +20,6 @@ defmodule WebsocketClientPageHandler do
   end
 
   def build_body(_request) do
-    Utils.renderPage("client_page.html", [])
+    Utils.renderFragment("client_page.html", [])
   end
 end

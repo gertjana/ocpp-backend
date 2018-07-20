@@ -1,1 +1,15 @@
-<div>Charger Page</div>
+<h1><%= charger.serial %></h1>
+<table>
+	<tr>
+		<td>Status</td>
+		<td><%= charger.status %></td>
+	</tr>
+	<tr>
+		<td>Connected</td>
+		<td><%= charger.connected %></td>
+	</tr>
+	<tr>
+		<td>Last seen</td>
+		<td><%= charger.last_seen %></td>
+	</tr>
+</table>

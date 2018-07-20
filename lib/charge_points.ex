@@ -21,9 +21,9 @@ defmodule Chargepoints do
     end
   end
 
-  def handle_call({:get, serial}, _from, _state) do
-    {:ok, charger} = getChargerBySerial(serial)
-    {:reply, :ok, charger}  
+  def handle_call({:subscriber, serial}, _from, state) do
+    charger = getChargerBySerial(serial)
+    {:reply, {:ok, charger}, state}  
   end
 
   def handle_call({:unsubscribe, serial}, _from, _state) do
@@ -46,7 +46,7 @@ defmodule Chargepoints do
     {:reply, :ok, updated}
   end
 
-  defp getChargerBySerial(serial) do
+  def getChargerBySerial(serial) do
     Model.Charger |> OcppBackendRepo.get_by(serial: serial)
   end
 
