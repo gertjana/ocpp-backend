@@ -12,7 +12,7 @@ defmodule DashboardPageHandler do
   def handle(request, state) do
     req = :cowboy_req.reply(
       200,
-      [{"content-type", "text/html"}],
+      %{"content-type" => "text/html"},
       build_body(request),
       request
     )

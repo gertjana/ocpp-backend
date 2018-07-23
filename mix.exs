@@ -19,7 +19,8 @@ defmodule OcppBackend.Mixfile do
 
   defp deps do
     [ 
-      { :cowboy, github: "ninenines/cowboy", tag: "2.0.0-pre.3" },
+      # { :cowboy, github: "ninenines/cowboy", tag: "2.0.0-pre.4" },
+      { :cowboy,      "~> 2.4.0"},
       { :exjsx,       "~> 4.0.0" },
       { :uuid,        "~> 1.1" },
       { :timex,       "~> 3.0" },
