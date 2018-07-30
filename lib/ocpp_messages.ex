@@ -54,13 +54,12 @@ defmodule OcppMessages do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "StartTransaction", %{"connectorId" => _, "idTag" => id_tag, "meterStart" => meter_start, "timestamp" => timestamp}], state}, _sender, current_state) do
+  def handle_call({[2, id, "StartTransaction", %{"connectorId" => _, "transactionId" => transaction_id, "idTag" => id_tag, "meterStart" => meter_start, "timestamp" => timestamp}], state}, _sender, current_state) do
     case state do
       %{:currentTransaction => _} ->
         {:ok, reply} = JSX.encode([4, id, "Transaction Already started", "A session is still undergoing on this chargepoint"])
         {:reply, {{:text, reply}, state}, current_state}
       _ ->
-        {state, transaction_id} =  next_transaction_id(state)
         state = Map.put(state, :currentTransaction, %{id: transaction_id, start: meter_start, timestamp: timestamp, idTag: id_tag})
 
         {:ok, start_time} = Timex.parse(timestamp, "{ISO:Extended}")
@@ -72,13 +71,13 @@ defmodule OcppMessages do
     end
   end
 
-  def handle_call({[2, id, "StopTransaction", %{"idTag" => id_tag, "meterStop" => meter_stop, "timestamp" => timestamp}], state}, _sender, current_state) do
+  def handle_call({[2, id, "StopTransaction", %{"idTag" => id_tag, "transactionId" => transaction_id, "meterStop" => meter_stop, "timestamp" => timestamp}], state}, _sender, current_state) do
     case state do
       %{:currentTransaction => current_transaction} ->
         case Map.get(current_transaction, :idTag) do
           tag when tag == id_tag ->
             volume = meter_stop - Map.get(current_transaction, :start)
-            transaction_id = Map.get(current_transaction, :id)
+            {state, public_id} = public_id(state, transaction_id)
             {:ok, stop_time} = Timex.parse(timestamp, "{ISO:Extended}")
 
             GenServer.call(Chargesessions, {:stop, transaction_id, volume, stop_time})
@@ -102,8 +101,7 @@ defmodule OcppMessages do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  defp next_transaction_id(state) do
-    state = %{state | :id => state.id + 1}
-    {state, state.serial <> "_" <> Integer.to_string(state.id)}
+  defp public_id(state, transaction_id) do
+    {state, state.serial <> "_" <> transaction_id}
   end
 end

@@ -16,7 +16,17 @@ defmodule ChargerCommandHandler do
   def to_json(request, state) do
     serial = :cowboy_req.binding(:serial, request)
     command = :cowboy_req.binding(:command, request)
-    info "Received: #{command} for #{serial}"
+    executeCommand(serial, command)
     {"{\"#{serial}\":\"#{command}\"}", request, state}
+  end
+
+  defp executeCommand(serial, command) do
+    {:ok, charger} = GenServer.call(Chargepoints, {:subscriber, serial})
+    case command do
+      "reset_hard" -> GenServer.call(OcppCommands, {charger.pid, :reset, "Hard"})
+      "reset_soft" -> GenServer.call(OcppCommands, {charger.pid, :reset, "Soft"})
+
+      _ -> warn "Unknown command"
+    end
   end
 end

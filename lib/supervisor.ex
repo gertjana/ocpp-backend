@@ -14,6 +14,7 @@ defmodule OcppBackend.Supervisor do
     children =  [
       worker(OcppBackendRepo, []),
       OcppMessages,
+      OcppCommands,
       TokenAuthorisation,
       Chargepoints,
       Chargetokens,

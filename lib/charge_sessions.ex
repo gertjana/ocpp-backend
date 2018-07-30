@@ -2,6 +2,7 @@ defmodule Chargesessions do
   use GenServer
   use Agent
   import Logger
+  import Ecto.Query, only: [from: 2, where: 3]
   alias Model.Session, as: Session
 
   @moduledoc """
@@ -15,22 +16,16 @@ defmodule Chargesessions do
   end
 
   def handle_call({:start, transaction_id, serial, id_tag, start_time}, _from, state) do
-    session = %Session{transaction_id: transaction_id,
-                             serial: serial,
-                             token: id_tag,
-                             start_time: start_time}
+    session = %Session{transaction_id: transaction_id, serial: serial, token: id_tag, start_time: start_time}
     {:ok, inserted} = OcppBackendRepo.insert(session)
     {:reply, {:ok, inserted}, state}
   end
 
   def handle_call({:stop, transaction_id, volume, end_time}, _from, state) do
     session = getSession(transaction_id)
-    start_time = session.start_time
-    duration = Timex.diff(end_time, start_time, :minutes)
+    duration = Timex.diff(end_time, session.start_time, :minutes)
 
-    {:ok, updated} = update(transaction_id, %{stop_time: end_time,
-                                              duration: duration,
-                                              volume: volume})
+    {:ok, updated} = update(transaction_id, %{stop_time: end_time, duration: duration, volume: volume})
 
     {:reply, {:ok, updated}, state}
   end
@@ -41,7 +36,10 @@ defmodule Chargesessions do
   end
 
   defp getSession(transaction_id) do
-    Session |> OcppBackendRepo.get_by(transaction_id: transaction_id)
+      result = OcppBackendRepo.all(
+        from s in Session,
+        where: s.transaction_id == ^transaction_id and is_nil(s.stop_time))
+      result |> List.first
   end
 
   defp update(transaction_id, changes) do

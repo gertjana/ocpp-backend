@@ -26,7 +26,7 @@ defmodule OcppBackend do
   end
 
   defp routes do
-    [{:_, static_routes ++ websocket_routes ++ page_routes ++ api_routes}]
+    [{:_, static_routes() ++ websocket_routes() ++ page_routes() ++ api_routes()}]
   end
 
   defp static_routes do

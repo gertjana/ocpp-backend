@@ -8,7 +8,7 @@
     <%= Enum.map(chargers, fn c -> %>
       <tr> 
         <td><%= c.serial%></td>
-        <td><%= c.pid%><td>
+        <td><%= c.pid%></td>
         <td><%= c.status%></td>
         <td><%= c.connected%></td>
         <td><%= c.last_seen%></td>

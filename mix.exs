@@ -19,7 +19,6 @@ defmodule OcppBackend.Mixfile do
 
   defp deps do
     [ 
-      # { :cowboy, github: "ninenines/cowboy", tag: "2.0.0-pre.4" },
       { :cowboy,      "~> 2.4.0"},
       { :exjsx,       "~> 4.0.0" },
       { :uuid,        "~> 1.1" },
@@ -27,7 +26,7 @@ defmodule OcppBackend.Mixfile do
       { :distillery,  "~> 1.0" },
       { :postgrex,    "0.13.3" },
       { :ecto,        "~> 2.2.8" }, 
-      {:credo, "~> 0.9.1", only: [:dev, :test], runtime: false}
+      { :credo,       "~> 0.9.1", only: [:dev, :test], runtime: false}
     ]
   end
 end

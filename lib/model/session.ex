@@ -8,7 +8,7 @@ defmodule Model.Session do
 
   schema "session" do
     field :transaction_id,  :string
-    field :serial,           :string
+    field :serial,          :string
     field :token,           :string
     field :start_time,      :naive_datetime
     field :stop_time,       :naive_datetime

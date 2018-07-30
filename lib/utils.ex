@@ -27,6 +27,11 @@ defmodule Utils do
   	result
   end
 
+  @spec timestamp_as_string() :: String.t()
+  def timestamp_as_string do
+    Integer.to_string(:os.system_time(:seconds))
+  end
+
   @spec default(any, any) :: any
   def default(value, default_value) do
     case value do

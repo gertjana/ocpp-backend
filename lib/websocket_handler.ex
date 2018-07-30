@@ -21,17 +21,22 @@ defmodule WebsocketHandler do
   end
 
   def terminate(_reason, req, _state) do
-    serial = :cowboy_req.binding(:serial, req)
-    GenServer.call(Chargepoints, {:unsubscribe, serial})
-    :ok
+    info "Terminating"
+    case :cowboy_req.binding(:serial, req) do
+      :undefined ->
+        :ok
+      serial ->
+        GenServer.call(Chargepoints, {:unsubscribe, serial})
+        :ok
+    end
   end
 
-  def websocket_handle({:text, content}, req, state) do
+  def websocket_handle({:text, content}, state) do
     {:ok, message} = JSX.decode(content)
-    serial = :cowboy_req.binding(:serial, req)
+    serial = state[:serial]
     GenServer.call(Chargepoints, {:message_seen, serial})
     {resp, new_state} = GenServer.call(OcppMessages, {message, state})
-    {:reply, resp, req, new_state}
+    {:reply, resp, new_state}
   end
 
   def websocket_info(msg, req, state) do
