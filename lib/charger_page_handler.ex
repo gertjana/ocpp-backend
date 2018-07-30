@@ -1,5 +1,4 @@
 defmodule ChargerPageHandler do
-  import Logger
 
   @moduledoc """
     Renders Page for a single charger
