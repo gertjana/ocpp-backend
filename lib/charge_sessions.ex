@@ -32,7 +32,7 @@ defmodule Chargesessions do
 
   def handle_call({:all, limit, offset}, _from, state) do
     sessions = OcppBackendRepo.all(
-                from s in Session, 
+                from s in Session,
                 order_by: [desc: s.start_time],
                 limit: ^limit,
                 offset: ^offset
@@ -41,12 +41,13 @@ defmodule Chargesessions do
   end
 
   defp getSession(transaction_id) do
-      result = OcppBackendRepo.all(
-                from s in Session,
-                where: s.transaction_id == ^transaction_id and is_nil(s.stop_time),
-                limit: 1
-               )
-      result |> List.first
+    List.first(
+      OcppBackendRepo.all(
+        from s in Session,
+        where: s.transaction_id == ^transaction_id and is_nil(s.stop_time),
+        limit: 1
+      )
+    )
   end
 
   defp update(transaction_id, changes) do
