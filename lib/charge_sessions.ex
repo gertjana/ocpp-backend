@@ -2,7 +2,7 @@ defmodule Chargesessions do
   use GenServer
   use Agent
   import Logger
-  import Ecto.Query, only: [from: 2, where: 3]
+  import Ecto.Query, only: [from: 2]
   alias Model.Session, as: Session
 
   @moduledoc """
@@ -30,15 +30,22 @@ defmodule Chargesessions do
     {:reply, {:ok, updated}, state}
   end
 
-  def handle_call(:all, _from, state) do
-    sessions = Session |> OcppBackendRepo.all()
+  def handle_call({:all, limit, offset}, _from, state) do
+    sessions = OcppBackendRepo.all(
+                from s in Session, 
+                order_by: [desc: s.start_time],
+                limit: ^limit,
+                offset: ^offset
+               )
     {:reply, {:ok, sessions}, state}
   end
 
   defp getSession(transaction_id) do
       result = OcppBackendRepo.all(
-        from s in Session,
-        where: s.transaction_id == ^transaction_id and is_nil(s.stop_time))
+                from s in Session,
+                where: s.transaction_id == ^transaction_id and is_nil(s.stop_time),
+                limit: 1
+               )
       result |> List.first
   end
 

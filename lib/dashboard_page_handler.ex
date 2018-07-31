@@ -42,7 +42,7 @@ defmodule DashboardPageHandler do
   end
 
   defp sessions do
-    {:ok, sessions} = GenServer.call(Chargesessions, :all)
+    {:ok, sessions} = GenServer.call(Chargesessions, {:all, 10, 0})
     sessions
   end
 
