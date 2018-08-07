@@ -31,12 +31,8 @@ defmodule ChargerCommandHandler do
       nil ->
         warn "Chargepoint #{serial} is offline"
       pid ->
-        case data["type"] do
-          "hard" -> GenServer.cast(Ocpp.Commands, {pid, :reset, "Hard"})
-          "soft" -> GenServer.cast(Ocpp.Commands, {pid, :reset, "Soft"})
-          x ->
-            warn "No or unknown type: #{x} for Reset command"
-        end
+        info "Sending reset command to #{serial}"
+        GenServer.cast(Ocpp.Commands, {pid, :reset, data})
     end
   end
 end

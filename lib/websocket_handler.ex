@@ -6,7 +6,6 @@ defmodule WebsocketHandler do
   import Logger
 
   def init(req, _state) do
-    info "Initializing WebSocketconnection for #{inspect(self())}"
     case Enum.member?(:cowboy_req.parse_header("sec-websocket-protocol", req), "ocpp1.6") do
       true ->
         serial = :cowboy_req.binding(:serial, req)
@@ -14,21 +13,25 @@ defmodule WebsocketHandler do
         req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", "ocpp1.6", req)
         info "Negotiated ocpp1.6 for #{serial}"
         GenServer.call(Chargepoints, {:subscribe, serial, self()})
-        {:cowboy_websocket, req2, state}
+        {:cowboy_websocket, req2, state, %{:idle_timeout => 3_600 * 24 * 7}}
       false ->
         {:shutdown, req}
     end
+  end
+
+  def websocket_init(state) do
+    info "Initializing WebSocketconnection for #{inspect(self())}"
+    OnlineChargers.put(state.serial, self())
+    {:ok, state}
   end
 
   def terminate(_reason, _req, state) do
     info "Terminating"
     case state.serial do
       nil ->
-        info "Undefined serial"
-        info "state #{inspect(state)}"
         :ok
       serial ->
-        info "marking #{serial} offline"
+        OnlineChargers.delete(serial)
         GenServer.call(Chargepoints, {:unsubscribe, serial})
         :ok
     end
@@ -42,8 +45,9 @@ defmodule WebsocketHandler do
     {:reply, resp, new_state}
   end
 
-  def websocket_info(msg, state) do
+  def websocket_info({:json, msg}, state) do
     {:ok, message} = JSX.encode(msg)
     {:reply, {:text, message}, state}
   end
+
 end

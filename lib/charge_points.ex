@@ -22,11 +22,9 @@ defmodule Chargepoints do
                                  connected: Timex.now,
                                  last_seen: Timex.now}
         {:ok, inserted} = OcppBackendRepo.insert(charger)
-        OnlineChargers.put(serial, pid)
         {:reply, :ok, inserted}
 
       _charger ->
-        OnlineChargers.put(serial, pid)
         {:ok, updated} = update(serial, %{status: "Available", pid: inspect(pid)})
         {:reply, :ok, updated}
     end
@@ -39,7 +37,6 @@ defmodule Chargepoints do
 
   def handle_call({:unsubscribe, serial}, _from, _state) do
     {:ok, updated} = update(serial, %{status: "Offline"})
-    OnlineChargers.delete(serial)
     {:reply, :ok, updated}
   end
 
