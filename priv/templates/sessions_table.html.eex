@@ -11,7 +11,7 @@
     <%= Enum.map(sessions, fn s -> %>
       <tr> 
         <td><%= s.transaction_id%></td>
-        <td><%= s.serial%><td>
+        <td><%= s.serial%></td>
         <td><%= s.token%></td>
         <td><%= s.start_time %></td>
         <td><%= s.stop_time %></td>

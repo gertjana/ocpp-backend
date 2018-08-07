@@ -9,13 +9,19 @@ Start of an OCPP 1.6 compatible backend in Elixir using Cowboy
 This is used now to test certain features in our main software
 
 
+Why not Phoenix?
+-----------------
+Every elixir person I have talked too about this asked me this
+
+2 reasons:
+ * I want to learn about Elixir, not about Phoenix
+ * Phoenix has their own implementation on top of websockets, I need the raw stuff
+
+
 Usage:
 ------------------
 
-Make sure you have elixir >= 1.0.0 installed.  
-```
-brew install elixir
-```
+This is verified to run on Elixir 1.5.3 / Erlang OTP 20.2.2
 
 Clone the repo, and change directory to it.  Run the following commands:
 
@@ -40,20 +46,20 @@ Or use the websocket client on localhost:8383/client
 
 There's a simple UI running at localhost:8383/chargers
 
-Sending messages back:
+Sending commands back:
 ----------------------
-Whenever a chargepoint connected the following message will appear in the console
-```
-12:16:16.148 [info]  Initializing WebSocketconnection for #PID<0.320.0>
-```
-please note the PID number
-to send a message from the console simply do:
-```
-send pid("0.320.0"), [2,"42", "TriggerMessage", %{"requestedMessage" => "Heartbeat"}]
-```
-where the PID number is the one mentioned above,
-the message is in default elixir primitives, eq a List of 3, id, MessageType and a Payload which is a Map
 
+There is the start of an API to send commands back to the charger, although it is not working yet
+
+call `POST /api/chargers/<serial/command` with body
+```
+{
+	"command":"Reset",
+	"data": {
+		"type":"hard"
+	}
+}
+``` 
 
 Attributions:
 -------------
