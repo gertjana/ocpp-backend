@@ -25,10 +25,11 @@ defmodule DashboardPageHandler do
   end
 
   defp online_chargers do
-    {:ok, chargers} = GenServer.call(Chargepoints, :subscribers)
-    chargers
-      |> Enum.filter(fn x -> x.status != "Offline" end)
-      |> Enum.count
+#    {:ok, chargers} = GenServer.call(Chargepoints, :subscribers)
+#    chargers
+#      |> Enum.filter(fn x -> x.status != "Offline" end)
+#      |> Enum.count
+    OnlineChargers.count
   end
 
   defp chargers do

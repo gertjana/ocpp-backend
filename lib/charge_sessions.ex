@@ -41,13 +41,12 @@ defmodule Chargesessions do
   end
 
   defp getSession(transaction_id) do
-    List.first(
-      OcppBackendRepo.all(
-        from s in Session,
-        where: s.transaction_id == ^transaction_id and is_nil(s.stop_time),
-        limit: 1
-      )
+    sessions = OcppBackendRepo.all(
+      from s in Session,
+      where: s.transaction_id == ^transaction_id and is_nil(s.stop_time),
+      limit: 1
     )
+    sessions |> List.first
   end
 
   defp update(transaction_id, changes) do

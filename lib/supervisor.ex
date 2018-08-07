@@ -13,12 +13,13 @@ defmodule OcppBackend.Supervisor do
 
     children =  [
       worker(OcppBackendRepo, []),
-      OcppMessages,
-      OcppCommands,
+      Ocpp.Messages,
+      Ocpp.Commands,
       TokenAuthorisation,
       Chargepoints,
       Chargetokens,
-      Chargesessions
+      Chargesessions,
+      worker(OnlineChargers, [])
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

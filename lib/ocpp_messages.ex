@@ -1,4 +1,4 @@
-defmodule OcppMessages do
+defmodule Ocpp.Messages do
   @moduledoc """
     This module handles all OCPP 1.6 messages
   """

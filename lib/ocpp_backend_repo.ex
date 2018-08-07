@@ -3,5 +3,4 @@ defmodule OcppBackendRepo do
   @moduledoc """
     Ecto Repo module
   """
-
 end

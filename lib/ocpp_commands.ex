@@ -1,4 +1,4 @@
-defmodule OcppCommands do
+defmodule Ocpp.Commands do
   @moduledoc """
     This module handles all OCPP 1.6 Commands
   """
@@ -11,7 +11,9 @@ defmodule OcppCommands do
     {:ok, pid}
   end
 
-  def handle_call({{pid, :reset, resetType}, _state}, _sender, _current_state) do
-    send pid, [2, Utils.timestamp_as_string, "Reset", %{"resetType" => resetType}]
+  def handle_cast({pid, :reset, reset_type}, current_state) do
+    info "Sending command to #{inspect(pid)}"
+    send pid, [2, Utils.timestamp_as_string, "Reset", %{"resetType" => reset_type}]
+    {:noreply, current_state}
   end
 end

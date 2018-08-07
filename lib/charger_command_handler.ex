@@ -5,28 +5,38 @@ defmodule ChargerCommandHandler do
     Module to handle command send via api calls
   """
 
-  def init(request, options \\ []) do
-    {:cowboy_rest, request, options}
+  def init(req, state) do
+    method = :cowboy_req.method(req)
+    has_body = :cowboy_req.has_body(req)
+    handle(method, has_body, req, state)
   end
 
-  def content_types_provided(request, state) do
-    {[{"application/json", :to_json}], request, state}
-  end
-
-  def to_json(request, state) do
+  def handle("POST", true, request, state) do
     serial = :cowboy_req.binding(:serial, request)
-    command = :cowboy_req.binding(:command, request)
-    executeCommand(serial, command)
-    {"{\"#{serial}\":\"#{command}\"}", request, state}
+    {:ok, body, request} = :cowboy_req.read_body(request)
+    {:ok, command} = JSX.decode(body)
+
+    executeCommand(command["command"], command["data"], serial)
+
+    request = :cowboy_req.reply(
+      201,
+      %{"location" => "to be implemented"},
+      request
+    )
+    {:ok, request, state}
   end
 
-  defp executeCommand(serial, command) do
-    {:ok, charger} = GenServer.call(Chargepoints, {:subscriber, serial})
-    case command do
-      "reset_hard" -> GenServer.call(OcppCommands, {charger.pid, :reset, "Hard"})
-      "reset_soft" -> GenServer.call(OcppCommands, {charger.pid, :reset, "Soft"})
-
-      _ -> warn "Unknown command"
+  defp executeCommand("Reset", data, serial) do
+    case OnlineChargers.get(serial) do
+      nil ->
+        warn "Chargepoint #{serial} is offline"
+      pid ->
+        case data["type"] do
+          "hard" -> GenServer.cast(Ocpp.Commands, {pid, :reset, "Hard"})
+          "soft" -> GenServer.cast(Ocpp.Commands, {pid, :reset, "Soft"})
+          x ->
+            warn "No or unknown type: #{x} for Reset command"
+        end
     end
   end
 end

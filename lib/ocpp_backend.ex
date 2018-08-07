@@ -44,6 +44,6 @@ defmodule OcppBackend do
   end
 
   defp api_routes do
-    [{"/api/chargers/:serial/:command", ChargerCommandHandler, []}]
+    [{"/api/chargers/:serial/command", ChargerCommandHandler, []}]
   end
 end
