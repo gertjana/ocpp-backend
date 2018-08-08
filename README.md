@@ -6,8 +6,9 @@ Start of an OCPP 1.6 compatible backend in Elixir using Cowboy
 
 ~~This is primarly meant for an knowledge sharing session within my company~~
 
-This is used now to test certain features in our main software
+~~This is used now to test certain features in our main software~~
 
+This is starting to make sense on its own
 
 Why not Phoenix?
 -----------------
