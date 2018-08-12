@@ -18,5 +18,5 @@ defmodule PageUtils do
     basedir = "#{Path.expand(__DIR__)}/../priv/templates/"
     EEx.eval_file("#{basedir}#{filename}.eex", bindings)
   end
-  
+
 end

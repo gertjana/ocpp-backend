@@ -42,13 +42,13 @@ defmodule Chargesessions do
 
   def handle_call({:serial, serial, limit, offset}, _from, state) do
     sessions = OcppBackendRepo.all(
-      from s in Session, 
+      from s in Session,
       where: s.serial == ^serial,
       order_by: [desc: s.start_time],
       limit: ^limit,
-      offset: ^offset    
+      offset: ^offset
     )
-    {:reply, {:ok, sessions}, state}    
+    {:reply, {:ok, sessions}, state}
   end
 
   defp getSession(transaction_id) do

@@ -40,28 +40,13 @@ defmodule Utils do
     end
   end
 
-  def renderPage(filename, title, bindings) do
-    basedir = "#{Path.expand(__DIR__)}/../priv/templates/"
-    content = EEx.eval_file("#{basedir}#{filename}.eex", bindings)
-
-    EEx.eval_file("#{basedir}page.html.eex", [
-      title: title,
-      content: content
-      ])
-  end
-
-  def renderFragment(filename, bindings) do
-    basedir = "#{Path.expand(__DIR__)}/../priv/templates/"
-    EEx.eval_file("#{basedir}#{filename}.eex", bindings)
-  end
-
   def pid_from_string(string) do
-    pids = ~r{\>|\<} 
-      |> Regex.split(string) 
-      |> Enum.at(1) 
-      |> String.split(".") 
+    pids = ~r{\>|\<}
+      |> Regex.split(string)
+      |> Enum.at(1)
+      |> String.split(".")
       |> Enum.map(&String.to_integer/1)
-      
+
     :c.pid(Enum.at(pids, 0), Enum.at(pids, 1), Enum.at(pids, 2))
   end
 
