@@ -48,7 +48,7 @@ defmodule DashboardPageHandler do
   end
 
   def build_body(_request) do
-    Utils.renderPage("dashboard.html", "Dashboard", [
+    PageUtils.renderPage("dashboard.html", "Dashboard", [
         onlineChargers: online_chargers(),
         chargers: chargers(),
         tokens: tokens(),

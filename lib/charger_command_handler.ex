@@ -26,13 +26,13 @@ defmodule ChargerCommandHandler do
     {:ok, request, state}
   end
 
-  defp executeCommand("Reset", data, serial) do
+  defp executeCommand(command, data, serial) do
     case OnlineChargers.get(serial) do
       nil ->
         warn "Chargepoint #{serial} is offline"
       pid ->
         info "Sending reset command to #{serial}"
-        GenServer.cast(Ocpp.Commands, {pid, :reset, data})
+        GenServer.cast(Ocpp.Commands, {pid, command, data})
     end
   end
 end

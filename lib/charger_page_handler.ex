@@ -25,8 +25,9 @@ defmodule ChargerPageHandler do
   def build_body(request) do
   	serial = :cowboy_req.binding(:serial, request)
   	{:ok, charger} = GenServer.call(Chargepoints, {:subscriber, serial})
-    Utils.renderPage("charger_page.html", "Charger #{serial}", [
-        charger: charger
+    {:ok, sessions} = GenServer.call(Chargesessions, {:serial, serial, 20, 0})
+    PageUtils.renderPage("charger_page.html", "Charger #{serial}", [
+        charger: charger, sessions: sessions
       ])
   end
 end

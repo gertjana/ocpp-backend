@@ -11,8 +11,8 @@ defmodule Ocpp.Commands do
     {:ok, pid}
   end
 
-  def handle_cast({pid, :reset, data}, state) do
-    send pid, {:json, [2, Utils.timestamp_as_string, "Reset", data]}
+  def handle_cast({pid, command, data}, state) do
+    send pid, {:json, [2, Utils.timestamp_as_string, command, data]}
     {:noreply, state}
   end
 end

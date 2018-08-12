@@ -56,7 +56,12 @@ defmodule Utils do
   end
 
   def pid_from_string(string) do
-    pids = ~r{\>|\<} |> Regex.split(string) |> Enum.at(1) |> String.split(".") |> Enum.map(&String.to_integer/1)
+    pids = ~r{\>|\<} 
+      |> Regex.split(string) 
+      |> Enum.at(1) 
+      |> String.split(".") 
+      |> Enum.map(&String.to_integer/1)
+      
     :c.pid(Enum.at(pids, 0), Enum.at(pids, 1), Enum.at(pids, 2))
   end
 

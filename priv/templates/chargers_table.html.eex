@@ -6,7 +6,7 @@
     <th>Last seen</th>
     <%= Enum.map(chargers, fn c -> %>
       <tr> 
-        <td><%= c.serial%></td>
+        <td><a href="/chargers/<%= c.serial%>"><%= c.serial%></a></td>
         <td><%= c.status%></td>
         <td><%= c.connected%></td>
         <td><%= c.last_seen%></td>

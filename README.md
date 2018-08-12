@@ -50,15 +50,15 @@ There's a simple UI running at localhost:8383/chargers
 Sending commands back:
 ----------------------
 
-There is the start of an API to send commands back to the charger, although it is not working yet
+There is the start of an API to send commands back to the charger, although it is not working completely yet
 
 call `POST /api/chargers/<serial/command` with body
 ```
 {
-	"command":"Reset",
-	"data": {
-		"type":"hard"
-	}
+  "command":"Reset",
+  "data": {
+    "resetType":"hard"
+  }
 }
 ``` 
 

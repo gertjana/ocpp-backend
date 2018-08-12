@@ -1,15 +1,67 @@
-<h1><%= charger.serial %></h1>
-<table>
-	<tr>
-		<td>Status</td>
-		<td><%= charger.status %></td>
-	</tr>
-	<tr>
-		<td>Connected</td>
-		<td><%= charger.connected %></td>
-	</tr>
-	<tr>
-		<td>Last seen</td>
-		<td><%= charger.last_seen %></td>
-	</tr>
-</table>
+<h2><%= charger.serial %></h2>
+<div class="panel-body">
+  <table class="table">
+  	<tr>
+  		<td>Status</td>
+  		<td><%= charger.status %></td>
+  	</tr>
+  	<tr>
+  		<td>Connected</td>
+  		<td><%= charger.connected %></td>
+  	</tr>
+  	<tr>
+  		<td>Last seen</td>
+  		<td><%= charger.last_seen %></td>
+  	</tr>
+  </table>
+</div>
+<div class="panel-body">
+  <table class="table">
+  	<tr>
+  		<td>
+        <button type="button" class="btn btn-lg btn-info" id="resetHard">Reset (Hard)</button>
+        <button type="button"  class="btn btn-lg btn-info" id="resetSoft">Reset (Soft)</button>
+      </td>
+      <td>
+        <button type="button"  class="btn btn-lg btn-info" id="triggerMessage">TriggerMessage</button>
+        <select id="messageType">
+          <option>BootNotification</option>
+          <option>DiagnosticsStatusNotification</option>
+          <option>FirmwareStatusNotification</option>
+          <option>Heartbeat</option>
+          <option>MeterValues</option>
+          <option>StatusNotification</option>
+        </select>
+      </td>
+  	</tr>
+  </table>
+  <script language="javascript">
+  	function postCommand(serial, commandData) {
+  		$.ajax({
+  	    url: '/api/chargers/'+serial+'/command',
+  	    type: 'post',
+  	    data: commandData,
+  	    headers: {'Content-Type': 'application/json'},
+  	    dataType: 'json',
+  	    success: function (data) {console.info(data);}
+  		});
+  	}
+
+    $("#resetHard").click(function(){
+      postCommand('<%= charger.serial %>', '{"command": "Reset","data":{"resetType":"Hard"}}');
+    });
+
+    $("#resetSoft").click(function(){
+      postCommand('<%= charger.serial %>', '{"command": "Reset","data":{"resetType":"Soft"}}');
+    });
+
+    $("#triggerMessage").click(function() {
+      var messageType = $("#messageType option:selected").text();
+      alert(messageType)
+      postCommand('<%= charger.serial %>', '{"command": "TriggerMessage","data":{"requestedMessage":"'+messageType+'"}}');
+    });
+  </script>
+</div>
+<div class="panel-body">
+	<%= Utils.renderFragment("sessions_table.html", [sessions: sessions]) %>
+</div>
