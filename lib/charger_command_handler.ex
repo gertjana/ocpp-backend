@@ -1,5 +1,6 @@
 defmodule ChargerCommandHandler do
   import Logger
+  alias Ocpp.Commands
 
   @moduledoc """
     Module to handle command send via api calls
@@ -20,7 +21,6 @@ defmodule ChargerCommandHandler do
       {:ok} ->
         request2 = :cowboy_req.reply(
           201,
-          %{"location" => "to be implemented"},
           request
         )
         {:ok, request2, state}
@@ -48,9 +48,9 @@ defmodule ChargerCommandHandler do
       nil ->
         {:offline, "Chargepoint #{serial} is offline"}
       pid ->
-        if(Ocpp.Commands.command_allowed(command)) do
+        if Commands.command_allowed(command) do
           info "Sending reset command to #{serial}"
-          GenServer.cast(Ocpp.Commands, {pid, command, data})
+          GenServer.cast(Commands, {pid, command, data})
           {:ok}
         else
           {:not_allowed, "Command #{command} is not allowed"}
