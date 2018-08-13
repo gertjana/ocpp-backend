@@ -63,5 +63,5 @@
   </script>
 </div>
 <div class="panel-body">
-	<%= Utils.renderFragment("sessions_table.html", [sessions: sessions]) %>
+	<%= PageUtils.renderFragment("sessions_table.html", [sessions: sessions]) %>
 </div>

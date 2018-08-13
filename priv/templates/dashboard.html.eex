@@ -14,7 +14,7 @@
         <h3 class="panel-title">Chargers</h3>
       </div>
       <div class="panel-body">
-        <%= Utils.renderFragment("chargers_table.html", [chargers: chargers]) %>
+        <%= PageUtils.renderFragment("chargers_table.html", [chargers: chargers]) %>
       </div>
     </div>
   </div>
@@ -24,7 +24,7 @@
         <h3 class="panel-title">Tokens</h3>
       </div>
       <div class="panel-body">
-        <%= Utils.renderFragment("tokens_table.html", [tokens: tokens]) %>
+        <%= PageUtils.renderFragment("tokens_table.html", [tokens: tokens]) %>
       </div>
     </div>
   </div>
@@ -36,7 +36,7 @@
         <h3 class="panel-title">Sessions</h3>
       </div>
       <div class="panel-body">
-        <%= Utils.renderFragment("sessions_table.html", [sessions: sessions]) %>
+        <%= PageUtils.renderFragment("sessions_table.html", [sessions: sessions]) %>
       </div>
     </div>
   </div>
