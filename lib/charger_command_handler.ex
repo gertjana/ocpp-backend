@@ -16,23 +16,45 @@ defmodule ChargerCommandHandler do
     {:ok, body, request} = :cowboy_req.read_body(request)
     {:ok, command} = JSX.decode(body)
 
-    executeCommand(command["command"], command["data"], serial)
-
-    request = :cowboy_req.reply(
-      201,
-      %{"location" => "to be implemented"},
-      request
-    )
-    {:ok, request, state}
+    case executeCommand(command["command"], command["data"], serial) do
+      {:ok} ->
+        request2 = :cowboy_req.reply(
+          201,
+          %{"location" => "to be implemented"},
+          request
+        )
+        {:ok, request2, state}
+      {:offline, message} ->
+        request2 = :cowboy_req.reply(
+          404,
+          %{},
+          message,
+          request
+        )
+        {:ok, request2, state}
+      {:not_allowed, message} ->
+        request2 = :cowboy_req.reply(
+          406,
+          %{},
+          message,
+          request
+        )
+        {:ok, request2, state}
+    end
   end
 
   defp executeCommand(command, data, serial) do
     case OnlineChargers.get(serial) do
       nil ->
-        warn "Chargepoint #{serial} is offline"
+        {:offline, "Chargepoint #{serial} is offline"}
       pid ->
-        info "Sending reset command to #{serial}"
-        GenServer.cast(Ocpp.Commands, {pid, command, data})
-    end
+        if(Ocpp.Commands.command_allowed(command)) do
+          info "Sending reset command to #{serial}"
+          GenServer.cast(Ocpp.Commands, {pid, command, data})
+          {:ok}
+        else
+          {:not_allowed, "Command #{command} is not allowed"}
+        end
+      end
   end
 end
