@@ -7,8 +7,15 @@
     <link href="/static/css/sb-admin.css" rel="stylesheet">
     <title><%= title %></title>
     <style>
-      div.jumbotron {
+      div.header {
         padding-left:20px;
+        padding-top:5px;
+        background-color: #8FBC8F;
+        margin-bottom: 10px;
+      }
+
+      div.header h2 {
+        margin-top: 0px;       
       }
     </style>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
@@ -16,7 +23,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   </head>
   <body>
-    <div class="jumbotron bg-info">
+    <div class="header">
       <h2>Charger Backend</h2> 
       <p>
       An OCPP 1.6 backend built in Elixir
