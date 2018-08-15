@@ -11,15 +11,17 @@
         padding-left:20px;
       }
     </style>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/static/js/bootstrap.min.js"></script>    
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   </head>
   <body>
-    <div class="jumbotron">
-      <h1>Charger Backend</h1> 
-      <p>An OCPP 1.6 backend built in Elixir</p> 
+    <div class="jumbotron bg-info">
+      <h2>Charger Backend</h2> 
+      <p>
+      An OCPP 1.6 backend built in Elixir
+      </p>
+      <a href='/chargers'><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a> 
     </div>          
     <div class="container">
       <%= content %>

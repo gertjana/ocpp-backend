@@ -1,6 +1,5 @@
 defmodule Chargepoints do
   use GenServer
-  use Agent
   import Logger
   alias Model.Charger, as: Charger
 

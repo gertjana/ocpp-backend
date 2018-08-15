@@ -11,7 +11,7 @@ defmodule Ocpp.Commands do
     {:ok, pid}
   end
 
-  defp allowed_commands, do: ["Reset", "TriggerMessage"]
+  defp allowed_commands, do: ["ClearCache", "RemoteStartTransaction", "RemoteStopTransaction", "Reset", "TriggerMessage"]
 
   def command_allowed(command), do: Enum.member?(allowed_commands(), command)
 

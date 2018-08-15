@@ -1,67 +1,160 @@
-<h2><%= charger.serial %></h2>
-<div class="panel-body">
-  <table class="table">
-  	<tr>
-  		<td>Status</td>
-  		<td><%= charger.status %></td>
-  	</tr>
-  	<tr>
-  		<td>Connected</td>
-  		<td><%= charger.connected %></td>
-  	</tr>
-  	<tr>
-  		<td>Last seen</td>
-  		<td><%= charger.last_seen %></td>
-  	</tr>
-  </table>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-lg-11">
+        <h2><%= charger.serial %></h2>
+      </div>
+      <div class="col-lg-1">
+        <%= if online do %>
+          <button type="button" class="btn btn-success">Online</button>
+        <%= else %>
+          <button type="button" class="btn btn-danger">Offline</button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="panel-body">
+    <table class="table">
+    	<tr>
+    		<td>Status</td>
+    		<td><%= charger.status %></td>
+    	</tr>
+    	<tr>
+    		<td>Connected</td>
+    		<td><%= charger.connected %></td>
+    	</tr>
+    	<tr>
+    		<td>Last seen</td>
+    		<td><%= charger.last_seen %></td>
+    	</tr>
+    </table>
+  </div>
 </div>
-<div class="panel-body">
-  <table class="table">
-  	<tr>
-  		<td>
-        <button type="button" class="btn btn-lg btn-info" id="resetHard">Reset (Hard)</button>
-        <button type="button"  class="btn btn-lg btn-info" id="resetSoft">Reset (Soft)</button>
-      </td>
-      <td>
-        <button type="button"  class="btn btn-lg btn-info" id="triggerMessage">TriggerMessage</button>
-        <select id="messageType">
-          <option>BootNotification</option>
-          <option>DiagnosticsStatusNotification</option>
-          <option>FirmwareStatusNotification</option>
-          <option>Heartbeat</option>
-          <option>MeterValues</option>
-          <option>StatusNotification</option>
-        </select>
-      </td>
-  	</tr>
-  </table>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    Commands
+  </div>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-lg-2">
+        <button type="button" class="btn btn-info" id="resetHard">Reset (Hard)</button>
+      </div>
+      <div class="col-lg-2">
+        <button type="button" class="btn btn-info" id="resetSoft">Reset (Soft)</button>
+      </div>
+      <div class="col-lg-2">
+        <button type="button" class="btn btn-info" id="clearCache">Clear Cache</button>
+      </div>
+      <div class="col-lg-6">
+        <div class="dropdown">
+          <button class="btn btn-info dropdown-toggle" type="button" id="triggerMessage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Triggermessage
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#">BootNotification</a></li>
+            <li><a class="dropdown-item" href="#">DiagnosticsStatusNotification</a></li>
+            <li><a class="dropdown-item" href="#">FirmwareStatusNotification</a></li>
+            <li><a class="dropdown-item" href="#">Heartbeat</a></li>
+            <li><a class="dropdown-item" href="#">MeterValues</a></li>
+            <li><a class="dropdown-item" href="#">StatusNotification</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row"><hr></div>  
+    <div class="row">
+      <div class="col-lg-1"><label for="idToken">IdTag</label></div>
+      <div class="col-lg-2"><input id="idToken" class="form-control" type="text" placeholder="idToken" /></div>
+      <div class="col-lg-1"><label for="connector">connectorId</label></div>
+      <div class="col-lg-2"><input id="connector" class="form-control" type="text" placeholder="0" /></div>
+      <div class="col-lg-2"><button type="button" class="btn btn-info" id="start">Start</button></div>
+    </div>
+    <div class="row"><hr></div>  
+    <div class="row">
+      <div class="col-lg-3"></div>
+      <div class="col-lg-1"><label for="transactionId">transactionId</label></div>
+      <div class="col-lg-2"><input id="transactionId" class="form-control" type="text" placeholder="transactionId" /></div>
+      <div class="col-lg-2"><button type="button" class="btn btn-info" id="stop">Stop</button></div>    
+    </div>
+  </div>
   <script language="javascript">
   	function postCommand(serial, commandData) {
+      updateInfoPane("sending Command.. " + commandData);
   		$.ajax({
   	    url: '/api/chargers/'+serial+'/command',
   	    type: 'post',
   	    data: commandData,
   	    headers: {'Content-Type': 'application/json'},
   	    dataType: 'json',
-  	    success: function (data) {console.info(data);}
+        statusCode: {
+          404: function() {updateInfoPane("Chargepoint is offline");},
+          406: function() {updateInfoPane("Command not allowed");},
+          201: function() {updateInfoPane("Command accepted");}
+        }
   		});
   	}
 
+    var infoQueue = []
+    function updateInfoPane(text) {
+      infoQueue.push(text);
+      if (infoQueue.length>5) infoQueue.shift();
+      $("#infopane").html(infoQueue.join("<br>"))
+    }
+
     $("#resetHard").click(function(){
-      postCommand('<%= charger.serial %>', '{"command": "Reset","data":{"resetType":"Hard"}}');
+      postCommand('<%= charger.serial %>', 
+        '{"command": "Reset","data":{"resetType":"Hard"}}');
     });
 
     $("#resetSoft").click(function(){
-      postCommand('<%= charger.serial %>', '{"command": "Reset","data":{"resetType":"Soft"}}');
+      postCommand('<%= charger.serial %>', 
+        '{"command": "Reset","data":{"resetType":"Soft"}}');
     });
 
-    $("#triggerMessage").click(function() {
-      var messageType = $("#messageType option:selected").text();
-      alert(messageType)
-      postCommand('<%= charger.serial %>', '{"command": "TriggerMessage","data":{"requestedMessage":"'+messageType+'"}}');
+    $("#clearCache").click(function(){
+      postCommand('<%= charger.serial %>', 
+        '{"command": "ClearCache","data":{}}');
     });
+
+    // $("#triggerMessage ~ ul li a.dropdown-item").click(function(event) {
+    //   postCommand('<%= charger.serial %>', 
+    //     '{"command": "TriggerMessage","data":{"requestedMessage":"'+messageType+'"}}');
+    // });
+
+    $(".dropdown-item").click(function(event){
+      var messageType = event.target.text
+      postCommand('<%= charger.serial %>', 
+        '{"command": "TriggerMessage","data":{"requestedMessage":"'+messageType+'"}}');
+    });
+
+    $("#start").click(function(){
+      var idToken = $("#idToken").val();
+      var connector = $("#connector").val();
+      postCommand('<%= charger.serial %>', 
+        '{"command": "RemoteStartTransaction","data":{"idTag":"'+idToken+'", "connectorId":"'+connector+'"}}');
+    });
+
+    $("#stop").click(function(){
+      var transactionId = $("#transactionId").val();
+      postCommand('<%= charger.serial %>', 
+        '{"command": "RemoteStopTransaction","data":{"transactionId":"'+transactionId+'"}}');
+    });
+
   </script>
 </div>
-<div class="panel-body">
-	<%= PageUtils.renderFragment("sessions_table.html", [sessions: sessions]) %>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    Sessions
+  </div>
+  <div class="panel-body">
+	 <%= PageUtils.renderFragment("sessions_table.html", [sessions: sessions]) %>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    Debug
+  </div>
+  <div class="panelbody" id="infopane" class="panel-body">
+  </div>
 </div>

@@ -49,7 +49,7 @@ defmodule ChargerCommandHandler do
         {:offline, "Chargepoint #{serial} is offline"}
       pid ->
         if Commands.command_allowed(command) do
-          info "Sending reset command to #{serial}"
+          info "Sending #{command} command to #{serial}"
           GenServer.cast(Commands, {pid, command, data})
           {:ok}
         else
