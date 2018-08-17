@@ -10,7 +10,8 @@
       div.header {
         padding-left:20px;
         padding-top:5px;
-        background-color: #8FBC8F;
+        background-color: #6699CC;
+        color: #CCCCCC;
         margin-bottom: 10px;
       }
 

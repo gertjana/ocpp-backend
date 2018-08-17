@@ -2,6 +2,7 @@
   <tr>
     <th>Transaction Id</th>
     <th>Serial</th>
+    <th>Connector</th>
     <th>Token</th>
     <th>Start Time</th>
     <th>Stop Time</th>
@@ -12,6 +13,7 @@
       <tr> 
         <td><%= s.transaction_id%></td>
         <td><%= s.serial%></td>
+        <td><%= s.connector_id%></td>
         <td><%= s.token%></td>
         <td><%= s.start_time %></td>
         <td><%= s.stop_time %></td>

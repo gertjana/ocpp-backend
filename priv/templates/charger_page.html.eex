@@ -94,15 +94,15 @@
       </div>
       <div class="panel-body">
         <div class="row">
-          <div class="col-lg-2"><label for="DTvendorId">VendorId</label></div>
+          <div class="col-lg-3"><label for="DTvendorId">VendorId</label></div>
           <div class="col-lg-6"><input id="DTvendorId" class="form-control" type="text" placeholder="vendorId" /></div>
         </div>
         <div class="row">
-          <div class="col-lg-2"><label for="DTmessageType">MessageType</label></div>
+          <div class="col-lg-3"><label for="DTmessageType">MessageType</label></div>
           <div class="col-lg-6"><input id="DTmessageType" class="form-control" type="text" placeholder="messageType" /></div>
         </div>
         <div class="row">
-          <div class="col-lg-2"><label for="DTdata">Data</label></div>
+          <div class="col-lg-3"><label for="DTdata">Data</label></div>
           <div class="col-lg-6"><input id="DTdata" class="form-control" type="text" placeholder="data" /></div>
           <div class="col-lg-2"><button type="button" class="btn btn-info" id="dataTransfer">DataTransfer</button></div>
         </div>

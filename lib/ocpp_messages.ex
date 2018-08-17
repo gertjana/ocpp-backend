@@ -53,8 +53,8 @@ defmodule Ocpp.Messages do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "StartTransaction", %{"connectorId" => _, "transactionId" => transaction_id, "idTag" => id_tag, "meterStart" => meter_start, "timestamp" => timestamp}], state}, _sender, current_state) do
-    {state, {:ok, reply}} = handle_start_transaction(id, transaction_id, id_tag, meter_start, timestamp, state)
+  def handle_call({[2, id, "StartTransaction", %{"connectorId" => connectorId, "transactionId" => transaction_id, "idTag" => id_tag, "meterStart" => meter_start, "timestamp" => timestamp}], state}, _sender, current_state) do
+    {state, {:ok, reply}} = handle_start_transaction(id, connectorId, transaction_id, id_tag, meter_start, timestamp, state)
     {:reply, {{:text, reply}, state}, current_state}
   end
 
@@ -96,7 +96,7 @@ defmodule Ocpp.Messages do
     {state, JSX.encode([3, id, []])}
   end
 
-  defp handle_start_transaction(id, transaction_id, id_tag, meter_start, timestamp, state) do
+  defp handle_start_transaction(id, connector_id, transaction_id, id_tag, meter_start, timestamp, state) do
     case state do
       %{:currentTransaction => _} ->
         {state, JSX.encode([4, id, "Transaction Already started", "A session is still undergoing on this chargepoint"])}
@@ -105,7 +105,7 @@ defmodule Ocpp.Messages do
 
         {:ok, start_time} = Timex.parse(timestamp, "{ISO:Extended}")
 
-        GenServer.call(Chargesessions, {:start, transaction_id, state.serial, id_tag, start_time})
+        GenServer.call(Chargesessions, {:start, connector_id, transaction_id, state.serial, id_tag, start_time})
 
         {state, JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: id_tag], transactionId: transaction_id]])}
     end

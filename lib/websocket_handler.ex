@@ -12,7 +12,7 @@ defmodule WebsocketHandler do
         state = %{:serial => serial, :id => 1}
         req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", "ocpp1.6", req)
         info "Negotiated ocpp1.6 for #{serial}"
-        GenServer.call(Chargepoints, {:subscribe, serial, self()})
+        GenServer.call(Chargepoints, {:subscribe, serial})
         {:cowboy_websocket, req2, state, %{:idle_timeout => 3_600 * 24 * 7}}
       false ->
         {:shutdown, req}

@@ -13,7 +13,7 @@ defmodule Chargepoints do
     {:ok, pid}
   end
 
-  def handle_call({:subscribe, serial, pid}, _from, _state) do
+  def handle_call({:subscribe, serial}, _from, _state) do
     case getChargerBySerial(serial) do
       nil ->
         charger = %Charger{serial: serial,
@@ -24,7 +24,7 @@ defmodule Chargepoints do
         {:reply, :ok, inserted}
 
       _charger ->
-        {:ok, updated} = update(serial, %{status: "Available", pid: inspect(pid)})
+        {:ok, updated} = update(serial, %{status: "Available"})
         {:reply, :ok, updated}
     end
   end
@@ -40,7 +40,7 @@ defmodule Chargepoints do
   end
 
   def handle_call(:subscribers, _from, state) do
-    chargepoints = Charger |> OcppBackendRepo.all()
+    chargepoints = Charger |> OcppBackendRepo.all(order_by: :last_seen)
     {:reply, {:ok, chargepoints}, state}
   end
 
