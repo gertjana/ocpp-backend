@@ -48,8 +48,8 @@ defmodule Ocpp.Messages do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "StatusNotification", %{"status" => status}], state}, _sender, current_state) do
-    {state, {:ok, reply}} = handle_status_notification(id, status, state)
+  def handle_call({[2, id, "StatusNotification", %{"status" => status, "connectorId" => connector_id, "errorCode" => _error_code}], state}, _sender, current_state) do
+    {state, {:ok, reply}} = handle_status_notification(id, status, connector_id, state)
     {:reply, {{:text, reply}, state}, current_state}
   end
 
@@ -91,8 +91,8 @@ defmodule Ocpp.Messages do
     {state, JSX.encode([3, id, [currentTime: Utils.datetime_as_string]])}
   end
 
-  defp handle_status_notification(id, status, state) do
-    GenServer.call(Chargepoints, {:status, status, state.serial})
+  defp handle_status_notification(id, status, connector_id, state) do
+    GenServer.call(Chargepoints, {:status, status, state.serial, connector_id})
     {state, JSX.encode([3, id, []])}
   end
 

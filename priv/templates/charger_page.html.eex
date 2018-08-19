@@ -1,40 +1,55 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
+<div class="card mt-lg-3">
+  <div class="card-header">
     <div class="row">
-      <div class="col-lg-11">
-        <h2><%= charger.serial %></h2>
+      <div class="col-lg-2">
+        <h3><%= charger.serial %></h3>
       </div>
       <div class="col-lg-1">
         <%= if online do %>
-          <button type="button" class="btn btn-success">Online</button>
+          <span class="badge badge-success badge-pill">Online</span>
         <% else %>
-          <button type="button" class="btn btn-danger">Offline</button>
+          <span class="badge badge-danger badge-pill">Offline</span>
         <% end %>
       </div>
     </div>
   </div>
-  <div class="panel-body">
-    <table class="table">
-    	<tr>
-    		<td>Status</td>
-    		<td><%= charger.status %></td>
-    	</tr>
-    	<tr>
-    		<td>Connected</td>
-    		<td><%= charger.connected %></td>
-    	</tr>
-    	<tr>
-    		<td>Last seen</td>
-    		<td><%= charger.last_seen %></td>
-    	</tr>
-    </table>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-lg-8">
+        <table class="table table-sm table-striped">
+          <thead class="thead-light">
+            <th>Evse</th>
+            <th>Connector</th>
+            <th>CurrentType</th>
+            <th>Max Power</th>
+            <th>Status</th>
+          </thead>
+          <%= Enum.map(evse_connectors, fn es -> %>
+            <tr>
+              <td><%= es.evse_id %></td>
+              <td><%= es.connector_id %></td>
+              <td><%= es.current_type %></td>
+              <td><%= es.power_kwh %></td>
+              <td>
+                  <%= case es.status do %>
+                  <%  nil -> %><span class="badge badge-secondary">Unknown</span></td>
+                  <%  "Unknown" -> %><span class="badge badge-secondary">Unknown</span></td>
+                  <%  "Available" -> %><span class="badge badge-primary">Available</span></td>
+                  <%  "Faulted" -> %><span class="badge badge-danger">Faulted</span></td>
+                  <%  _ -> %><span class="badge badge-success"><%= es.status %></span></td>
+                  <% end %>
+            </tr>
+          <% end) %>
+        </table>
+      </div>       
+    </div>
   </div>
 </div>
-<div class="panel panel-default">
-  <div class="panel-heading">
-    Commands
+<div class="card mt-lg-3">
+  <div class="card-header">
+    Remote Control
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="row">
       <div class="col-lg-2">
         <button type="button" class="btn btn-info" id="resetHard">Reset (Hard)</button>
@@ -45,18 +60,34 @@
       <div class="col-lg-2">
         <button type="button" class="btn btn-info" id="clearCache">Clear Cache</button>
       </div>
-      <div class="col-lg-6">
+      <div class="col-lg-2">
         <div class="dropdown">
           <button class="btn btn-info dropdown-toggle" type="button" id="triggerMessage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Triggermessage
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li><a class="dropdown-item" href="#">BootNotification</a></li>
-            <li><a class="dropdown-item" href="#">DiagnosticsStatusNotification</a></li>
-            <li><a class="dropdown-item" href="#">FirmwareStatusNotification</a></li>
-            <li><a class="dropdown-item" href="#">Heartbeat</a></li>
-            <li><a class="dropdown-item" href="#">MeterValues</a></li>
-            <li><a class="dropdown-item" href="#">StatusNotification</a></li>
+            <li><a class="dropdown-item dropdown-item-triggermessage" href="#">BootNotification</a></li>
+            <li><a class="dropdown-item dropdown-item-triggermessage" href="#">DiagnosticsStatusNotification</a></li>
+            <li><a class="dropdown-item dropdown-item-triggermessage" href="#">FirmwareStatusNotification</a></li>
+            <li><a class="dropdown-item dropdown-item-triggermessage" href="#">Heartbeat</a></li>
+            <li><a class="dropdown-item dropdown-item-triggermessage" href="#">MeterValues</a></li>
+            <li><a class="dropdown-item dropdown-item-triggermessage" href="#">StatusNotification</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-2">
+        <div class="dropdown">
+          <button class="btn btn-info dropdown-toggle" type="button" id="unlockConnector" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Unlock Connector
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <%= Enum.map(evse_connectors, fn es -> %>
+              <li>
+                <a class="dropdown-item dropdown-item-unlock" data="<%= es.connector_id %>" href="#">
+                  Evse <%= es.evse_id %> Connector <%= es.connector_id%> <%= es.current_type %> <%= es.power_kwh %>kWh
+                </a>
+              </li>
+            <% end) %>
           </ul>
         </div>
       </div>
@@ -65,16 +96,22 @@
 </div>
 <div class="row">
   <div class="col-lg-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
+    <div class="card mt-lg-3">
+      <div class="card-header">
         Remote Start/Stop
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <div class="col-lg-2"><label for="idToken">IdTag</label></div>
           <div class="col-lg-3"><input id="idToken" class="form-control" type="text" placeholder="idToken" /></div>
-          <div class="col-lg-2"><label for="connector">connectorId</label></div>
-          <div class="col-lg-3"><input id="connector" class="form-control" type="text" placeholder="0" /></div>
+          <div class="col-lg-3"><label for="connector">connectorId</label></div>
+          <div class="col-lg-2">
+            <select id="connector" class="form-control">
+              <%= Enum.map(evse_connectors, fn es -> %>
+                <option value="<%= es.connector_id%>"><%= es.connector_id%></option>              
+              <% end) %>              
+            </select>
+          </div>
           <div class="col-lg-2"><button type="button" class="btn btn-info" id="start">Start</button></div>
         </div>
         <div class="row">&nbsp;</div>  
@@ -88,11 +125,11 @@
     </div>
   </div>
   <div class="col-lg-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
+    <div class="card mt-lg-3">
+      <div class="card-header">
         DataTransfer
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <div class="col-lg-3"><label for="DTvendorId">VendorId</label></div>
           <div class="col-lg-6"><input id="DTvendorId" class="form-control" type="text" placeholder="vendorId" /></div>
@@ -110,20 +147,20 @@
     </div>
   </div>
 </div>
-<div class="panel panel-default">
-  <div class="panel panel-heading">
+<div class="card mt-lg-3">
+  <div class="card-header">
     Sessions
   </div>
-  <div class="panel-body">
+  <div class="card-body">
 	 <%= PageUtils.renderFragment("sessions_table.html", [sessions: sessions]) %>
   </div>
 </div>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
+<div class="card mt-lg-3">
+  <div class="card-header">
     Debug
   </div>
-  <div class="panelbody" id="infopane" class="panel-body">
+  <div class="cardbody" id="infopane" class="card-body">
   </div>
 </div>
 
@@ -166,10 +203,16 @@
       '{"command": "ClearCache","data":{}}');
   });
 
-  $(".dropdown-item").click(function(event){
+  $(".dropdown-item-triggermessage").click(function(event){
     var messageType = event.target.text
     postCommand('<%= charger.serial %>', 
       '{"command": "TriggerMessage","data":{"requestedMessage":"'+messageType+'"}}');
+  });
+
+  $(".dropdown-item-unlock").click(function(event){
+    var connector = event.target.attributes.data.value;
+    postCommand('<%= charger.serial %>', 
+      '{"command": "UnlockConnector","data":{"connectorId":'+connector+'}}');
   });
 
   $("#start").click(function(){

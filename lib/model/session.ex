@@ -24,6 +24,7 @@ defmodule Model.Session do
     	|> cast(params, [
               :transaction_id,
               :serial,
+              :connector_id,
               :token,
               :start_time,
               :stop_time,

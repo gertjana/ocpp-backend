@@ -1,29 +1,27 @@
 <div class="row">
-  <div class="col">
-    <div class="panel panel-default">
-      <div class="panel-body">
+  <div class="col-lg-12">
+    <div class="card card-default mt-lg-3 mb-lg-3">
+      <div class="card-body">
         <%= onlineChargers %> Chargers online
       </div>
     </div>
   </div>
-</row> 
-<div class="row">
-  <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Chargers</h3>
+  <div class="col-lg-8">
+    <div class="card mb-lg-3">
+      <div class="card-header">
+        Chargers
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <%= PageUtils.renderFragment("chargers_table.html", [chargers: chargers]) %>
       </div>
     </div>
   </div>
   <div class="col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Tokens</h3>
+    <div class="card mb-lg-3">
+      <div class="card-header">
+        Tokens
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <%= PageUtils.renderFragment("tokens_table.html", [tokens: tokens]) %>
       </div>
     </div>
@@ -31,11 +29,11 @@
 </div>  
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Sessions</h3>
+    <div class="card mb-lg-3">
+      <div class="card-header">
+        Sessions
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <%= PageUtils.renderFragment("sessions_table.html", [sessions: sessions]) %>
       </div>
     </div>

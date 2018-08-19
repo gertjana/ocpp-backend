@@ -1,5 +1,5 @@
-<table class="table">
-  <tr>
+<table class="table table-sm table-striped">
+  <thead class="thead-light">
     <th>Transaction Id</th>
     <th>Serial</th>
     <th>Connector</th>
@@ -8,7 +8,7 @@
     <th>Stop Time</th>
     <th>Volume</th>
     <th>Duration</th>
-  </tr>
+  </thead>
     <%= Enum.map(sessions, fn s -> %>
       <tr> 
         <td><%= s.transaction_id%></td>

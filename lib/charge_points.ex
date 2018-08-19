@@ -1,7 +1,9 @@
 defmodule Chargepoints do
   use GenServer
   import Logger
+  import Ecto.Query, only: [from: 2]
   alias Model.Charger, as: Charger
+  alias Model.EvseConnector, as: EvseConnector
 
   @moduledoc """
     Provides access to charge points
@@ -17,9 +19,10 @@ defmodule Chargepoints do
     case getChargerBySerial(serial) do
       nil ->
         charger = %Charger{serial: serial,
-                                 status: "Available",
                                  connected: Timex.now,
                                  last_seen: Timex.now}
+        {:ok, _} = OcppBackendRepo.insert(
+          %EvseConnector{serial: serial, evse_id: 1, connector_id: 1, current_type: "AC", power_kwh: "22"})
         {:ok, inserted} = OcppBackendRepo.insert(charger)
         {:reply, :ok, inserted}
 
@@ -34,6 +37,25 @@ defmodule Chargepoints do
     {:reply, {:ok, charger}, state}
   end
 
+  def handle_call({:evse_connectors, serial}, _from, state) do
+    evse_connectors = OcppBackendRepo.all(
+      from es in EvseConnector,
+      where: es.serial == ^serial,
+      order_by: es.connector_id)
+    updated = case OnlineChargers.get(serial) do
+      nil ->
+        evse_connectors
+          |> Enum.map(fn ec -> %EvseConnector{ec | status: "Unknown"} end)
+        _ -> 
+          evse_connectors
+          |> Enum.map(fn ec ->
+            status =  ConnectorStatus.get(serial, ec.connector_id)
+            %EvseConnector{ec | status: status}
+          end)
+    end
+    {:reply, {:ok, updated}, state}
+  end
+
   def handle_call({:unsubscribe, serial}, _from, _state) do
     {:ok, updated} = update(serial, %{status: "Offline"})
     {:reply, :ok, updated}
@@ -44,9 +66,9 @@ defmodule Chargepoints do
     {:reply, {:ok, chargepoints}, state}
   end
 
-  def handle_call({:status, status, serial}, _from, _state) do
-    {:ok, updated} = update(serial, %{status: status})
-    {:reply, :ok, updated}
+  def handle_call({:status, status, serial, connector_id}, _from, state) do
+    ConnectorStatus.put(serial, connector_id, status)
+    {:reply, :ok, state}
   end
 
   def handle_call({:message_seen, serial}, _from, _state) do

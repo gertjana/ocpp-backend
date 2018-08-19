@@ -19,7 +19,8 @@ defmodule OcppBackend.Supervisor do
       Chargepoints,
       Chargetokens,
       Chargesessions,
-      worker(OnlineChargers, [])
+      worker(OnlineChargers, []),
+      worker(ConnectorStatus, [])
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

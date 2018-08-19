@@ -1,14 +1,14 @@
-<table class="table">
-  <tr>
+<table class="table table-sm table-striped">
+  <thead class="thead-light">
     <th>Token</th>
     <th>Description</th>
     <th>Blocked</th>
+  </thead>
     <%= Enum.map(tokens, fn t -> %>
       <tr> 
         <td><%= t.token %></td>
-        <td><%= t.description %><td>
+        <td><%= t.description %></td>
         <td><%= t.blocked %></td>
       </tr>
     <% end) %>
-  </tr>
 </table>

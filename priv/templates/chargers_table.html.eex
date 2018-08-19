@@ -1,16 +1,14 @@
-<table class="table">
-  <tr>
+<table class="table table-sm table-striped">
+  <thead class="thead-light">
     <th>Serial</th>
-    <th>Status</th>
     <th>Connected</th>
     <th>Last seen</th>
+  </thead>
     <%= Enum.map(chargers, fn c -> %>
       <tr> 
         <td><a href="/chargers/<%= c.serial%>"><%= c.serial%></a></td>
-        <td><%= c.status%></td>
         <td><%= c.connected%></td>
         <td><%= c.last_seen%></td>
       </tr>
     <% end) %>
-  </tr>
 </table>
