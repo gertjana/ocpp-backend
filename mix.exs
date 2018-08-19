@@ -25,7 +25,8 @@ defmodule OcppBackend.Mixfile do
       { :timex,       "~> 3.0" },
       { :distillery,  "~> 1.0" },
       { :postgrex,    "0.13.3" },
-      { :ecto,        "~> 2.2.8" }, 
+      { :ecto,        "~> 2.2.8" },
+      { :earmark,     "~> 1.2.4" }, 
       { :credo,       "~> 0.9.1", only: [:dev, :test], runtime: false}
     ]
   end

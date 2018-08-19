@@ -39,6 +39,7 @@ defmodule OcppBackend do
 
   defp page_routes do
     [{"/client", WebsocketClientPageHandler, []},
+    {"/about", AboutPageHandler, []},
     {"/chargers", DashboardPageHandler, []},
     {"/chargers/:serial", ChargerPageHandler, []}]
   end

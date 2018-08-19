@@ -46,7 +46,7 @@ defmodule Chargepoints do
       nil ->
         evse_connectors
           |> Enum.map(fn ec -> %EvseConnector{ec | status: "Unknown"} end)
-        _ -> 
+        _ ->
           evse_connectors
           |> Enum.map(fn ec ->
             status =  ConnectorStatus.get(serial, ec.connector_id)
