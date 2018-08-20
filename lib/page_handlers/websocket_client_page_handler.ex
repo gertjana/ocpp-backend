@@ -1,5 +1,5 @@
 
-defmodule WebsocketClientPageHandler do
+defmodule PageHandlers.WebsocketClient do
 @moduledoc """
   Renders A Client to test the backend
  """
@@ -23,6 +23,7 @@ defmodule WebsocketClientPageHandler do
   end
 
   def build_body(_request) do
-    PageUtils.renderPage("client_page.html", "WebsocketClient", [])
+    {:ok, chargers} = GenServer.call(Chargepoints, :subscribers)
+    PageUtils.renderPage("client_page.html", "WebsocketClient", [chargers: chargers])
   end
 end

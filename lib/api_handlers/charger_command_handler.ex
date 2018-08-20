@@ -1,4 +1,4 @@
-defmodule ChargerCommandHandler do
+defmodule ApiHandlers.ChargerCommands do
   import Logger
   alias Ocpp.Commands
 
@@ -18,29 +18,14 @@ defmodule ChargerCommandHandler do
     {:ok, command} = JSX.decode(body)
 
     case executeCommand(command["command"], command["data"], serial) do
-      {:ok} ->
-        request2 = :cowboy_req.reply(
-          201,
-          request
-        )
-        {:ok, request2, state}
-      {:offline, message} ->
-        request2 = :cowboy_req.reply(
-          404,
-          %{},
-          message,
-          request
-        )
-        {:ok, request2, state}
-      {:not_allowed, message} ->
-        request2 = :cowboy_req.reply(
-          406,
-          %{},
-          message,
-          request
-        )
-        {:ok, request2, state}
+      {:ok}                   -> {:ok, response(request, 201), state}
+      {:offline, message}     -> {:ok, response(request, 404, message), state}
+      {:not_allowed, message} -> {:ok, response(request, 406, message), state}
     end
+  end
+
+  defp response(request, statusCode \\ 200, message \\ "", headers \\ %{}) do
+    :cowboy_req.reply(statusCode, headers, message, request)
   end
 
   defp executeCommand(command, data, serial) do

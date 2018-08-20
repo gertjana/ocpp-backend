@@ -1,5 +1,5 @@
 
-defmodule DashboardPageHandler do
+defmodule PageHandlers.Dashboard do
 
   @moduledoc """
     Render the dashboard (landing page)

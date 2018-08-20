@@ -18,7 +18,7 @@
             <a class="nav-link" href="/chargers">Chargers</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/client" target="_blank">Client</a>
+            <a class="nav-link" href="/client">Client</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/about">About</a>

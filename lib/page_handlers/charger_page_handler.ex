@@ -1,4 +1,4 @@
-defmodule ChargerPageHandler do
+defmodule PageHandlers.Charger do
   import Logger
 
   @moduledoc """

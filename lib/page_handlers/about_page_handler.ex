@@ -1,4 +1,4 @@
-defmodule AboutPageHandler do
+defmodule PageHandlers.About do
   import Logger
 
   @moduledoc """
