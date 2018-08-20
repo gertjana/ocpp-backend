@@ -62,7 +62,9 @@ defmodule Chargepoints do
   end
 
   def handle_call(:subscribers, _from, state) do
-    chargepoints = Charger |> OcppBackendRepo.all(order_by: :last_seen)
+    chargepoints = Charger
+      |> OcppBackendRepo.all(order_by: :last_seen)
+      |> Enum.map(fn c -> %Charger{c | online: (OnlineChargers.get(c.serial) != nil)} end)
     {:reply, {:ok, chargepoints}, state}
   end
 

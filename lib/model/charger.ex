@@ -10,6 +10,7 @@ defmodule Model.Charger do
     field :serial,    :string
     field :connected, :naive_datetime
     field :last_seen, :naive_datetime
+    field :online,    :boolean, virtual: true
 
     timestamps()
   end
