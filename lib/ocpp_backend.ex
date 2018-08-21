@@ -1,7 +1,6 @@
 defmodule OcppBackend do
   use Application
   import Logger
-  import Utils
 
   @moduledoc """
     Main entrypoint of the Application
@@ -13,7 +12,7 @@ defmodule OcppBackend do
     import Supervisor.Spec, warn: false
 
     port = System.get_env("PORT")
-            |> default("8383")
+            |> Utils.default("8383")
             |> String.to_integer
 
     info "Starting OCPP Backend application on #{port}"

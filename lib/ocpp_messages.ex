@@ -4,7 +4,6 @@ defmodule Ocpp.Messages do
   """
   use GenServer
   import Logger
-
   def start_link(_) do
     {:ok, pid} = GenServer.start_link(__MODULE__, [], name: __MODULE__)
     info "Started #{__MODULE__} #{inspect(pid)}"
@@ -53,13 +52,14 @@ defmodule Ocpp.Messages do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "StartTransaction", %{"connectorId" => connectorId, "transactionId" => transaction_id, "idTag" => id_tag, "meterStart" => meter_start, "timestamp" => timestamp}], state}, _sender, current_state) do
-    {state, {:ok, reply}} = handle_start_transaction(id, connectorId, transaction_id, id_tag, meter_start, timestamp, state)
+  def handle_call({[2, id, "StartTransaction", %{"connectorId" => connector_id, "transactionId" => transaction_id, "idTag" => id_tag, "meterStart" => meter_start, "timestamp" => timestamp}], state}, _sender, current_state) do
+    {state, {:ok, reply}} = handle_start_transaction(id,
+      [connector_id: connector_id, transaction_id: transaction_id, id_tag: id_tag, meter_start: meter_start, timestamp: timestamp], state)
     {:reply, {{:text, reply}, state}, current_state}
   end
 
   def handle_call({[2, id, "StopTransaction", %{"idTag" => id_tag, "transactionId" => transaction_id, "meterStop" => meter_stop, "timestamp" => timestamp}], state}, _sender, current_state) do
-    {state, {:ok, reply}} = handle_stop_transaction(id, id_tag, transaction_id, meter_stop, timestamp, state)
+    {state, {:ok, reply}} = handle_stop_transaction(id, [id_tag: id_tag, transaction_id: transaction_id, meter_stop: meter_stop, timestamp: timestamp], state)
     {:reply, {{:text, reply}, state}, current_state}
   end
 
@@ -96,7 +96,7 @@ defmodule Ocpp.Messages do
     {state, JSX.encode([3, id, []])}
   end
 
-  defp handle_start_transaction(id, connector_id, transaction_id, id_tag, meter_start, timestamp, state) do
+  defp handle_start_transaction(id, [connector_id: connector_id, transaction_id: transaction_id, id_tag: id_tag, meter_start: meter_start, timestamp: timestamp], state) do
     case state do
       %{:currentTransaction => _} ->
         {state, JSX.encode([4, id, "Transaction Already started", "A session is still undergoing on this chargepoint"])}
@@ -111,7 +111,7 @@ defmodule Ocpp.Messages do
     end
   end
 
-  defp handle_stop_transaction(id, id_tag, transaction_id, meter_stop, timestamp, state) do
+  defp handle_stop_transaction(id, [id_tag: id_tag, transaction_id: transaction_id, meter_stop: meter_stop, timestamp: timestamp], state) do
     case state do
       %{:currentTransaction => current_transaction} ->
         case Map.get(current_transaction, :idTag) do
