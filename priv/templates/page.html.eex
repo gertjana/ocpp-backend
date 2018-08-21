@@ -15,7 +15,16 @@
       <div>
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
+            <a class="nav-link" href="/dashboard">Dashboard</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="/chargers">Chargers</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/sessions">Sessions</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/tokens">Tokens</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/client">Client</a>

@@ -1,0 +1,8 @@
+<div class="card mt-lg-3">
+  <div class="card-header">
+    Chargers
+  </div>
+  <div class="card-body">
+    <%= PageUtils.renderFragment("chargers_table.html", [chargers: chargers]) %>
+  </div>
+</div>

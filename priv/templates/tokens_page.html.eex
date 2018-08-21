@@ -1,0 +1,8 @@
+<div class="card mt-lg-3">
+  <div class="card-header">
+    Tokenss
+  </div>
+  <div class="card-body">
+    <%= PageUtils.renderFragment("tokens_table.html", [tokens: tokens]) %>
+  </div>
+</div>

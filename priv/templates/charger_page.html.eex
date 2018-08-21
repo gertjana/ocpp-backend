@@ -18,18 +18,18 @@
       <div class="col-lg-8">
         <table class="table table-sm table-striped">
           <thead class="thead-light">
-            <th>Evse</th>
             <th>Connector</th>
+            <th>Evse</th>
             <th>CurrentType</th>
             <th>Max Power</th>
             <th>Status</th>
           </thead>
           <%= Enum.map(evse_connectors, fn es -> %>
             <tr>
-              <td><%= es.evse_id %></td>
               <td><%= es.connector_id %></td>
+              <td><%= es.evse_id %></td>
               <td><%= es.current_type %></td>
-              <td><%= es.power_kwh %></td>
+              <td><%= es.power_kwh %> kWh</td>
               <td>
                   <%= case es.status do %>
                   <%  nil -> %><span class="badge badge-secondary">Unknown</span></td>

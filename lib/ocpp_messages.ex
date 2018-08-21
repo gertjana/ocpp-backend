@@ -80,7 +80,7 @@ defmodule Ocpp.Messages do
   end
 
   defp handle_boot_notification(id, state) do
-    {state, JSX.encode([3, id, [status: "Pending", currentTime: Utils.datetime_as_string, interval: 300]])}
+    {state, JSX.encode([3, id, [status: "Accepted", currentTime: Utils.datetime_as_string, interval: 300]])}
   end
 
   defp handle_datatransfer(id, state) do

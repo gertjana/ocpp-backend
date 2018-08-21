@@ -1,5 +1,4 @@
 defmodule PageHandlers.Charger do
-  import Logger
 
   @moduledoc """
     Renders Page for a single charger
@@ -28,8 +27,6 @@ defmodule PageHandlers.Charger do
   	{:ok, charger} = GenServer.call(Chargepoints, {:subscriber, serial})
     {:ok, sessions} = GenServer.call(Chargesessions, {:serial, serial, 20, 0})
     {:ok, evse_connectors} = GenServer.call(Chargepoints, {:evse_connectors, serial})
-    info inspect(evse_connectors)
-    info inspect(charger)
     online = OnlineChargers.get(serial) != nil
 
     PageUtils.renderPage("charger_page.html", "Charger #{serial}", [

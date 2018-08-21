@@ -1,0 +1,8 @@
+<div class="card mt-lg-3">
+  <div class="card-header">
+    Sessions
+  </div>
+  <div class="card-body">
+    <%= PageUtils.renderFragment("sessions_table.html", [sessions: sessions]) %>
+  </div>
+</div>

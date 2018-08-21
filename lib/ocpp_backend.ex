@@ -5,6 +5,8 @@ defmodule OcppBackend do
 
   @moduledoc """
     Main entrypoint of the Application
+
+    sets up the webserver and the routes
   """
 
   def start(_type, _args) do
@@ -40,8 +42,11 @@ defmodule OcppBackend do
   defp page_routes do
     [{"/client", PageHandlers.WebsocketClient, []},
     {"/about", PageHandlers.About, []},
-    {"/chargers", PageHandlers.Dashboard, []},
-    {"/chargers/:serial", PageHandlers.Charger, []}]
+    {"/chargers", PageHandlers.Chargers, []},
+    {"/chargers/:serial", PageHandlers.Charger, []},
+    {"/dashboard", PageHandlers.Dashboard, []},
+    {"/sessions", PageHandlers.Sessions, []},
+    {"/tokens", PageHandlers.Tokens, []}]
   end
 
   defp api_routes do

@@ -53,7 +53,7 @@
       <div class=col-lg-3>
       </div>
       <div class=col-lg-1>
-        <button type="button" class="btn btn-primary" onclick="send();" >Send</button>
+        <button type="button" class="btn btn-primary" onclick="sendMessage();" >Send</button>
       </div>
     </div>
     <div class="row">
@@ -65,7 +65,10 @@
 </div>
 <div class="card mt-lg-3">
   <div class="card-header">
-    Communication
+    Communication 
+    <span class="d-inline-flex justify-content-end">
+      <button type="button" class="btn btn-primary btn-sm" onclick="clearMessages();">clear</button>
+    </span>
   </div>
   <div class="card-body">
         <div id="messages"></div>
@@ -122,7 +125,7 @@
   /**
    * Sends the value of the text input to the server
    */
-  function send(){
+  function sendMessage(){
       var text = document.getElementById("messageinput").value;
       if (text == '') return;
       writeRequest(text);
@@ -135,6 +138,10 @@
 
   function write(text) {
       messages.innerHTML += "<br/>" + text;
+  }
+
+  function clearMessages() {
+    messages.innerHTML = "";
   }
 
   function writeRequest(text){
