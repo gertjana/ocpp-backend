@@ -18,13 +18,13 @@ defmodule ApiHandlers.ChargerCommands do
     {:ok, command} = JSX.decode(body)
 
     case executeCommand(command["command"], command["data"], serial) do
-      {:ok}                   -> {:ok, response(request, 201), state}
+      {:ok}                   -> {:ok, response(request, 201, ""), state}
       {:offline, message}     -> {:ok, response(request, 404, message), state}
       {:not_allowed, message} -> {:ok, response(request, 406, message), state}
     end
   end
 
-  defp response(request, statusCode \\ 200, message \\ "", headers \\ %{}) do
+  defp response(request, statusCode, message, headers \\ %{}) do
     :cowboy_req.reply(statusCode, headers, message, request)
   end
 

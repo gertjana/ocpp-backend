@@ -6,6 +6,10 @@ defmodule TokenAuthorisation do
     Module that provides a very simple token authorization mechanism
   """
 
+  def init(args) do
+    {:ok, args}
+  end
+
   def start_link(_) do
     {:ok, pid} = GenServer.start_link(__MODULE__, [], name: __MODULE__)
     info "Started #{__MODULE__} #{inspect(pid)}"

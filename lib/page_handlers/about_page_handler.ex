@@ -1,5 +1,4 @@
 defmodule PageHandlers.About do
-  import Logger
 
   @moduledoc """
     Renders Page for a single charger

@@ -1,5 +1,5 @@
 defmodule PageUtils do
-  import Logger
+
   @moduledoc """
     Utility functions
   """
