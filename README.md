@@ -22,7 +22,9 @@ Every elixir person I have talked too about this asked me this
 Usage:
 ------------------
 
-This is verified to run on Elixir 1.5.3 / Erlang OTP 20.2.2
+This is verified to run on 
+ * Elixir 1.5.3 / Erlang OTP 20.2.2
+ * Elixir 1.7.2 / Erlang OTP 20.2.2
 
 Clone the repo, and change directory to it.  Run the following commands:
 
@@ -43,14 +45,16 @@ and then start it up with:
 
 Connect a 1.6 Charger or simulator to localhost:8383/ocppws/:serial 
 
-Or use the websocket client on localhost:8383/client
+Or use the websocket client on localhost:8383/client page
 
-There's a simple UI running at localhost:8383/chargers
+There's a UI running at localhost:8383/chargers
 
 Sending commands back:
 ----------------------
 
-There is the start of an API to send commands back to the charger, although it is not working completely yet
+There is an API to send commands back to the charger.
+
+The buttons on the UI charger page call this API
 
 call `POST /api/chargers/<serial/command` with body
 ```
@@ -70,7 +74,7 @@ This is based on a cowboy_elixir_example by
 Contributing:
 -------------
 
-please do.
+All contributions are welcome, 
 
 License:
 --------
