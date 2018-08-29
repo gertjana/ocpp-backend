@@ -4,7 +4,7 @@ defmodule OcppBackend.Mixfile do
   def project do
     [app: :ocpp_backend,
      version: "0.0.3",
-     elixir: ">= 1.0.0",
+     elixir: ">= 1.5.3",
      elixirc_paths: ["lib", "lib/model"],
      deps: deps()]
   end
@@ -27,7 +27,8 @@ defmodule OcppBackend.Mixfile do
       { :postgrex,    "0.13.3" },
       { :ecto,        "~> 2.2.8" },
       { :earmark,     "~> 1.2.4" }, 
-      { :credo,       "~> 0.9.1", only: [:dev, :test], runtime: false}
+      { :credo,       "~> 0.9.1", only: [:dev, :test], runtime: false},
+      { :mock,        "~> 0.3.0", only: :test}
     ]
   end
 end
