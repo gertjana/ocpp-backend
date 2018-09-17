@@ -104,7 +104,7 @@ defmodule Ocpp.MessagesTest do
 
       {{:text, reply}, _state} = GenServer.call(OcppMessages,
         {[2, id, "StartTransaction", %{"connectorId" => 0, "transactionId" => id, "idTag" => id_token, "meterStart" => random_id(), "timestamp" => Utils.datetime_as_string()}], state_after_start})
-      check_error(reply, id)      
+      check_error(reply, id)
     end
 
     defp check_success(message, id, required_fields, optional_fields) do

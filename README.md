@@ -32,7 +32,7 @@ Clone the repo, and change directory to it.  Run the following commands:
     mix deps.compile
 
 
-Have a local postgres database ready and configure acces in `config/config.exs`
+Have a local postgres database ready and configure acces in `config/dev.exs` (and test.exs and prod.exs)
 
 
 run the database migrations
