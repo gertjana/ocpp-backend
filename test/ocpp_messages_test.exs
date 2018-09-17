@@ -86,7 +86,7 @@ defmodule Ocpp.MessagesTest do
       check_success(reply, id, [], ["idTagInfo"])
     end
 
-    test "StopTransaction" do
+    test "StopTransaction should respond with an error when a transaction hasn't started yet" do
       id_token = "01020304"
       id = random_id()
       state = %{serial: "09000099"}
@@ -95,6 +95,16 @@ defmodule Ocpp.MessagesTest do
         {[2, id, "StopTransaction", %{"idTag" => id_token,
            "transactionId" => id, "meterStop" => 2145, "timestamp" => Utils.datetime_as_string(10)}], state})
       check_error(reply, id)
+    end
+
+    test "StartTransaction should respond with an error when a transaction has already started" do
+      id_token = "01020304"
+      id = random_id()
+      state_after_start = %{serial: "09000099", currentTransaction: %{transaction_id: id, start: 2000, timestamp: Utils.datetime_as_string(), idTag: id_token}}
+
+      {{:text, reply}, _state} = GenServer.call(OcppMessages,
+        {[2, id, "StartTransaction", %{"connectorId" => 0, "transactionId" => id, "idTag" => id_token, "meterStart" => random_id(), "timestamp" => Utils.datetime_as_string()}], state_after_start})
+      check_error(reply, id)      
     end
 
     defp check_success(message, id, required_fields, optional_fields) do
