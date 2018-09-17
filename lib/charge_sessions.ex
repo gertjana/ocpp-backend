@@ -27,6 +27,7 @@ defmodule Chargesessions do
 
   def handle_call({:stop, transaction_id, volume, end_time}, _from, state) do
     session = get_session(transaction_id)
+    info inspect(session)
     duration = Timex.diff(end_time, session.start_time, :minutes)
 
     {:ok, updated} = update(transaction_id, %{stop_time: end_time, duration: duration, volume: volume})
@@ -56,6 +57,7 @@ defmodule Chargesessions do
   end
 
   def get_session(transaction_id) do
+    info "getting session for #{transaction_id}"
     sessions = OcppBackendRepo.all(
       from s in Session,
       where: s.transaction_id == ^transaction_id and is_nil(s.stop_time),

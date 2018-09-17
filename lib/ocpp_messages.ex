@@ -27,8 +27,8 @@ defmodule Ocpp.Messages do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "DataTransfer", %{"vendorId" => _vendorId}], state}, _sender, current_state) do
-    {state, {:ok, reply}} = handle_datatransfer(id, state)
+  def handle_call({[2, id, "DataTransfer", %{"vendorId" => vendor_id, "messageId" => message_id}], state}, _sender, current_state) do
+    {state, {:ok, reply}} = handle_datatransfer(id, vendor_id, message_id, state)
     {:reply, {{:text, reply}, state}, current_state}
   end
 
@@ -69,7 +69,7 @@ defmodule Ocpp.Messages do
   end
 
   def handle_call({_, state}, _sender, current_state) do
-    {:ok, reply} = JSX.encode([4, "", "Not Implemented", "This backend does not understand this message (yet)"])
+    {:ok, reply} = JSX.encode([4, "", "Not Implemented", "This backend does not understand this message (yet)", {}])
     {:reply, {{:text, reply}, state}, current_state}
   end
 
@@ -88,8 +88,8 @@ defmodule Ocpp.Messages do
     {state, JSX.encode([3, id, [status: "Accepted", currentTime: Utils.datetime_as_string, interval: 300]])}
   end
 
-  defp handle_datatransfer(id, state) do
-    {state, JSX.encode([3, id, [status: "Rejected", data: "Not Implemented"]])}
+  defp handle_datatransfer(id, vendor_id, message_id, state) do
+    {state, JSX.encode([4, id, [status: "Rejected", data: "Not Implemented"]])}
   end
 
   defp handle_heartbeat(id, state) do
@@ -106,7 +106,7 @@ defmodule Ocpp.Messages do
       %{:currentTransaction => _} ->
         {state, JSX.encode([4, id, "Transaction Already started", "A session is still undergoing on this chargepoint"])}
       _ ->
-        state = Map.put(state, :currentTransaction, %{id: transaction_id, start: meter_start, timestamp: timestamp, idTag: id_tag})
+        state = Map.put(state, :currentTransaction, %{transaction_id: transaction_id, start: meter_start, timestamp: timestamp, idTag: id_tag})
 
         {:ok, start_time} = Timex.parse(timestamp, "{ISO:Extended}")
 
@@ -119,17 +119,18 @@ defmodule Ocpp.Messages do
   defp handle_stop_transaction(id, [id_tag: id_tag, transaction_id: transaction_id, meter_stop: meter_stop, timestamp: timestamp], state) do
     case state do
       %{:currentTransaction => current_transaction} ->
+        current_transaction_id = Map.get(current_transaction, :transaction_id)
         case Map.get(current_transaction, :idTag) do
-          tag when tag == id_tag ->
+          tag when tag == id_tag and current_transaction_id == transaction_id ->
             volume = meter_stop - Map.get(current_transaction, :start)
             {:ok, stop_time} = Timex.parse(timestamp, "{ISO:Extended}")
 
-            GenServer.call(Chargesessions, {:stop, transaction_id, volume, stop_time})
+            GenServer.call(Chargesessions, {:stop, Map.get(current_transaction, :transaction_id), volume, stop_time})
 
             state = Map.delete(state, :currentTransaction)
             {state, JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: id_tag]]])}
           _ ->
-            {state, JSX.encode([4, id, "Transaction not stopped", "you can only stop a transaction with the same idtag"])}
+            {state, JSX.encode([4, id, "Transaction not stopped", "you can only stop a transaction with the same idtag and the same transactionId"])}
         end
       _ ->
         {state, JSX.encode([4, id, "Transaction not started", "you can't stop a transaction that hasn't been started"])}
