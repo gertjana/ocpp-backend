@@ -47,7 +47,7 @@ Connect a 1.6 Charger or simulator to localhost:8383/ocppws/:serial
 
 Or use the websocket client on localhost:8383/client page
 
-There's a UI running at localhost:8383/chargers
+There's a UI running at localhost:8383/dashboard
 
 Sending commands back:
 ----------------------
@@ -56,7 +56,7 @@ There is an API to send commands back to the charger.
 
 The buttons on the UI charger page call this API
 
-call `POST /api/chargers/<serial/command` with body
+call `POST /api/chargers/:serial/command` with body
 ```
 {
   "command":"Reset",
@@ -66,6 +66,27 @@ call `POST /api/chargers/<serial/command` with body
 }
 ``` 
 
+Docker: 
+-------
+
+Running the following command will build a release of the app in a docker-container. this will make sure everything is compiled for the linux architeture that is used when running the app in a docker container
+```
+docker build -t buildhelper.app -f Dockerfile.build --build-arg APP=ocpp_backend .
+```
+As this image is reasonably large we want to build an image that is only capable of running the app and we copy over the release that was build in the previous step
+
+```
+docker run -v /var/run/docker.sock:/var/run/docker.sock buildhelper.app docker build -t ocppbackend -f Dockerfile --build-arg APP=ocpp_backend --build-arg VERSION=0.0.3 .
+```
+
+the version argument should match with the one in your mix.exs
+
+and then run it with:
+```
+docker run -p 8383:8383 ocppbackend
+```
+
+
 Attributions:
 -------------
 This is based on a cowboy_elixir_example by
@@ -74,7 +95,7 @@ This is based on a cowboy_elixir_example by
 Contributing:
 -------------
 
-All contributions are welcome, 
+All contributions are welcome
 
 License:
 --------

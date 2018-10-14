@@ -13,7 +13,7 @@ defmodule OcppBackend.Mixfile do
     [
       mod: { OcppBackend, [] },
       applications: [:cowboy, :ranch, :timex, :postgrex, :ecto],
-      included_applications:  [:exjsx, :uuid]
+      included_applications:  [:exjsx, :uuid, :earmark, :parse_trans]
     ]
   end
 
@@ -23,12 +23,13 @@ defmodule OcppBackend.Mixfile do
       { :exjsx,       "~> 4.0.0" },
       { :uuid,        "~> 1.1" },
       { :timex,       "~> 3.0" },
-      { :distillery,  "~> 1.0" },
+      { :distillery,  "~> 1.5.2" },
       { :postgrex,    "0.13.3" },
       { :ecto,        "~> 2.2.8" },
       { :earmark,     "~> 1.2.4" }, 
       { :credo,       "~> 0.9.1", only: [:dev, :test], runtime: false},
-      { :mock,        "~> 0.3.0", only: :test}
+      { :mock,        "~> 0.3.0", only: :test},
+      { :mix_docker, "~> 0.5.0"}
     ]
   end
 end

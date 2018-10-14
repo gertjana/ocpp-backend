@@ -5,3 +5,5 @@ config :ocpp_backend, OcppBackendRepo,
   database: "ocpp_backend",
   username: "postgres",
   password: "postgres"
+
+config :mix_docker, image: "addictivesoftware/ocpp_backend"
