@@ -19,10 +19,10 @@ defmodule Chargesessions do
     {:ok, pid}
   end
 
-  def handle_call({:start, connector_id, transaction_id, serial, id_tag, start_time}, _from, state) do
-    session = %Session{connector_id: connector_id |> Integer.to_string, transaction_id: transaction_id, serial: serial, token: id_tag, start_time: start_time}
+  def handle_call({:start, connector_id, serial, id_tag, start_time}, _from, state) do
+    session = %Session{connector_id: connector_id |> Integer.to_string, serial: serial, token: id_tag, start_time: start_time}
     {:ok, inserted} = OcppBackendRepo.insert(session)
-    {:reply, {:ok, inserted}, state}
+    {:reply, {:ok, inserted.id}, state}
   end
 
   def handle_call({:stop, transaction_id, volume, end_time}, _from, state) do
@@ -57,10 +57,9 @@ defmodule Chargesessions do
   end
 
   def get_session(transaction_id) do
-    info "getting session for #{transaction_id}"
     sessions = OcppBackendRepo.all(
       from s in Session,
-      where: s.transaction_id == ^transaction_id and is_nil(s.stop_time),
+      where: s.id == ^transaction_id and is_nil(s.stop_time),
       limit: 1
     )
     sessions |> List.first

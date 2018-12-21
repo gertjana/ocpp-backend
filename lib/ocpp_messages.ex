@@ -57,9 +57,10 @@ defmodule Ocpp.Messages do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "StartTransaction", %{"connectorId" => connector_id, "transactionId" => transaction_id, "idTag" => id_tag, "meterStart" => meter_start, "timestamp" => timestamp}], state}, _sender, current_state) do
+                 #{[2, "2", "StartTransaction", %{"connectorId" => 1, "idTag" => "01020304", "meterStart" => 300, "timestamp" => "2018-12-21T08:40:29.918Z"}]
+  def handle_call({[2, id,  "StartTransaction", %{"connectorId" => connector_id, "idTag" => id_tag, "meterStart" => meter_start, "timestamp" => timestamp}], state}, _sender, current_state) do
     {state, {:ok, reply}} = handle_start_transaction(id,
-      [connector_id: connector_id, transaction_id: transaction_id, id_tag: id_tag, meter_start: meter_start, timestamp: timestamp], state)
+      [connector_id: connector_id, id_tag: id_tag, meter_start: meter_start, timestamp: timestamp], state)
     {:reply, {{:text, reply}, state}, current_state}
   end
 
@@ -101,16 +102,18 @@ defmodule Ocpp.Messages do
     {state, JSX.encode([3, id, []])}
   end
 
-  defp handle_start_transaction(id, [connector_id: connector_id, transaction_id: transaction_id, id_tag: id_tag, meter_start: meter_start, timestamp: timestamp], state) do
+  defp handle_start_transaction(id, [connector_id: connector_id, id_tag: id_tag, meter_start: meter_start, timestamp: timestamp], state) do
     case state do
       %{:currentTransaction => _} ->
         {state, JSX.encode([4, id, "Transaction Already started", "A session is still undergoing on this chargepoint"])}
       _ ->
-        state = Map.put(state, :currentTransaction, %{transaction_id: transaction_id, start: meter_start, timestamp: timestamp, idTag: id_tag})
-
         {:ok, start_time} = Timex.parse(timestamp, "{ISO:Extended}")
 
-        GenServer.call(Chargesessions, {:start, connector_id, transaction_id, state.serial, id_tag, start_time})
+        {:ok, transaction_id} = GenServer.call(Chargesessions, {:start, connector_id, state.serial, id_tag, start_time})
+
+        debug "TRANSATION ID: #{transaction_id}"
+
+        state = Map.put(state, :currentTransaction, %{transaction_id: transaction_id, start: meter_start, timestamp: timestamp, idTag: id_tag})
 
         {state, JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: id_tag], transactionId: transaction_id]])}
     end

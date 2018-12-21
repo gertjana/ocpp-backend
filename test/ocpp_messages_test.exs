@@ -3,6 +3,7 @@ defmodule Ocpp.MessagesTest do
   alias Ocpp.Messages, as: OcppMessages
   alias Model.Session, as: Session
   import Mock
+  import Logger
 
   describe "The Central System should respond to messages as specified in the OCPP 1.6 Version 2 specification" do
 
@@ -76,13 +77,15 @@ defmodule Ocpp.MessagesTest do
       state = %{serial: "09000099"}
 
       {{:text, reply}, _state} = GenServer.call(OcppMessages,
-        {[2, id, "StartTransaction", %{"connectorId" => 0, "transactionId" => id, "idTag" => id_token, "meterStart" => random_id(), "timestamp" => Utils.datetime_as_string()}], state})
+        {[2, id, "StartTransaction", %{"connectorId" => 0, "idTag" => id_token, "meterStart" => random_id(), "timestamp" => Utils.datetime_as_string()}], state})
       check_success(reply, id, ["idTagInfo", "transactionId"], [])
 
-      state_after_start = %{serial: "09000099", currentTransaction: %{transaction_id: id, start: 2000, timestamp: Utils.datetime_as_string(), idTag: id_token}}
+      transaction_id = reply |> JSX.decode! |> Enum.at(2) |> get_in(["transactionId"])
+
+      state_after_start = %{serial: "09000099", currentTransaction: %{transaction_id: transaction_id, start: 2000, timestamp: Utils.datetime_as_string(), idTag: id_token}}
 
       {{:text, reply}, _state} = GenServer.call(OcppMessages,
-        {[2, id, "StopTransaction", %{"idTag" => id_token, "transactionId" => id, "meterStop" => 2145, "timestamp" => Utils.datetime_as_string(10)}], state_after_start})
+        {[2, id, "StopTransaction", %{"idTag" => id_token, "transactionId" => transaction_id, "meterStop" => 2145, "timestamp" => Utils.datetime_as_string(10)}], state_after_start})
       check_success(reply, id, [], ["idTagInfo"])
     end
 
@@ -103,7 +106,7 @@ defmodule Ocpp.MessagesTest do
       state_after_start = %{serial: "09000099", currentTransaction: %{transaction_id: id, start: 2000, timestamp: Utils.datetime_as_string(), idTag: id_token}}
 
       {{:text, reply}, _state} = GenServer.call(OcppMessages,
-        {[2, id, "StartTransaction", %{"connectorId" => 0, "transactionId" => id, "idTag" => id_token, "meterStart" => random_id(), "timestamp" => Utils.datetime_as_string()}], state_after_start})
+        {[2, id, "StartTransaction", %{"connectorId" => 0, "idTag" => id_token, "meterStart" => random_id(), "timestamp" => Utils.datetime_as_string()}], state_after_start})
       check_error(reply, id)
     end
 

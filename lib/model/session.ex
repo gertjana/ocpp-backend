@@ -7,7 +7,6 @@ defmodule Model.Session do
   """
 
   schema "session" do
-    field :transaction_id,  :string
     field :serial,          :string
     field :connector_id,    :string
     field :token,           :string
@@ -22,7 +21,6 @@ defmodule Model.Session do
   def changeset(session, params \\ %{}) do
     session
     	|> cast(params, [
-              :transaction_id,
               :serial,
               :connector_id,
               :token,
