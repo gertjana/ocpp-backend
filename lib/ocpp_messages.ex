@@ -3,6 +3,7 @@ defmodule Ocpp.Messages do
     This module handles all OCPP 1.6 messages
   """
   use GenServer
+  import Logger
 
   def init(args) do
     {:ok, args}
