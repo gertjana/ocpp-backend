@@ -3,7 +3,6 @@ defmodule Ocpp.Messages do
     This module handles all OCPP 1.6 messages
   """
   use GenServer
-  import Logger
 
   def init(args) do
     {:ok, args}
@@ -110,8 +109,6 @@ defmodule Ocpp.Messages do
         {:ok, start_time} = Timex.parse(timestamp, "{ISO:Extended}")
 
         {:ok, transaction_id} = GenServer.call(Chargesessions, {:start, connector_id, state.serial, id_tag, start_time})
-
-        debug "TRANSATION ID: #{transaction_id}"
 
         state = Map.put(state, :currentTransaction, %{transaction_id: transaction_id, start: meter_start, timestamp: timestamp, idTag: id_tag})
 

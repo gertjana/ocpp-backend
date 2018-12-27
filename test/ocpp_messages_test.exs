@@ -82,7 +82,11 @@ defmodule Ocpp.MessagesTest do
 
       transaction_id = reply |> JSX.decode! |> Enum.at(2) |> get_in(["transactionId"])
 
-      state_after_start = %{serial: "09000099", currentTransaction: %{transaction_id: transaction_id, start: 2000, timestamp: Utils.datetime_as_string(), idTag: id_token}}
+      state_after_start = %{serial: "09000099",
+                            currentTransaction: %{transaction_id: transaction_id,
+                                                  start: 2000,
+                                                  timestamp: Utils.datetime_as_string(),
+                                                  idTag: id_token}}
 
       {{:text, reply}, _state} = GenServer.call(OcppMessages,
         {[2, id, "StopTransaction", %{"idTag" => id_token, "transactionId" => transaction_id, "meterStop" => 2145, "timestamp" => Utils.datetime_as_string(10)}], state_after_start})
