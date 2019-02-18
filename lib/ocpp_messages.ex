@@ -5,11 +5,11 @@ defmodule Ocpp.Messages do
     This module forward all OCPP messages to the respective versions
   """
 
-  def handle_message(message, state=%{serial: _, id: _, version: version}) do
-    case version do
+  def handle_message(message, state) do
+    case state.version do
       :ocpp20 -> V20.handle_message(message, state)
       :ocpp16 -> V16.handle_message(message, state)
-      _ -> {:error, "Unknown version #{version}"}
+      _ -> {:error, "Unknown version #{state.version}"}
     end
   end
 end
