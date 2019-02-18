@@ -2,7 +2,7 @@ OCPP 1.6 Backend
 ===================
 [![Build Status](https://travis-ci.org/gertjana/ocpp16-backend.svg?branch=master)](https://travis-ci.org/gertjana/ocpp16-backend) [![codebeat badge](https://codebeat.co/badges/a97a16d8-3f75-4deb-8ecc-9d8141ddf3c9)](https://codebeat.co/projects/github-com-gertjana-ocpp16-backend-master)
 
-Start of an OCPP 1.6 compatible backend in Elixir using Cowboy
+Start of an OCPP 1.6/2.0 compatible backend in Elixir using Cowboy
 
 ~~This is primarly meant for an knowledge sharing session within my company~~
 
@@ -43,7 +43,7 @@ and then start it up with:
 
     iex -S mix
 
-Connect a 1.6 Charger or simulator to localhost:8383/ocppws/:serial 
+Connect a 1.6 or 2.0 Charger or simulator to localhost:8383/ocppws/:serial 
 
 Or use the websocket client on localhost:8383/client page
 

@@ -11,7 +11,7 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <span class="navbar-brand">OCPP1.6 Backend<sub> elixir</sub></span>
+      <span class="navbar-brand">OCPP 1.6/2.0 Backend<sub> powered by Elixir</sub></span>
       <div>
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">

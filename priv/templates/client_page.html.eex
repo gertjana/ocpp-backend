@@ -21,6 +21,11 @@
         </select>
       </div>
       <div class=col-lg-2>
+        <label for="">Version</label> 
+        <select id="versionSelect" class="form-control">
+          <option value='ocpp1.6'>OCPP 1.6</option> 
+          <option value='ocpp2.0'>OCPP 2.0</option> 
+        </select>
       </div>
       <div class=col-lg-1>
             <button type="button" class="btn btn-primary" onclick="openSocket();" >Open</button>
@@ -90,14 +95,15 @@
     }
     serial = document.getElementById("serial").value;
     host = document.getElementById("hostSelect").value;
+    version = document.getElementById("versionSelect").value;
 
     // Create a new instance of the websocket
 
     if (host == 'local_ex') {
-      webSocket = new WebSocket("ws://"+serial+":abcdef1234abcdef1234abcdef1234abcdef1234@localhost:8383/ocppws/"+serial, ["ocpp1.6"]);
+      webSocket = new WebSocket("ws://"+serial+":abcdef1234abcdef1234abcdef1234abcdef1234@localhost:8383/ocppws/"+serial, [version]);
     }
     if (host == 'local_cn') {
-      webSocket = new WebSocket("ws://127.0.0.1:8017/ocppws/"+serial, ["ocpp1.6"]);
+      webSocket = new WebSocket("ws://127.0.0.1:8017/ocppws/"+serial, [version]);
     }
 
     /**

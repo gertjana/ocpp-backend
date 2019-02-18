@@ -6,17 +6,37 @@ defmodule WebsocketHandler do
   import Logger
 
   def init(req, _state) do
-    case Enum.member?(:cowboy_req.parse_header("sec-websocket-protocol", req), "ocpp1.6") do
-      true ->
-        serial = :cowboy_req.binding(:serial, req)
-        state = %{:serial => serial, :id => 1}
-        req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", "ocpp1.6", req)
-        info "Negotiated ocpp1.6 for #{serial}"
-        GenServer.call(Chargepoints, {:subscribe, serial})
-        {:cowboy_websocket, req2, state, %{:idle_timeout => 3_600 * 24 * 7}}
-      false ->
-        {:shutdown, req}
+    sec_websocket_protocol = :cowboy_req.parse_header("sec-websocket-protocol", req)
+    supported_version = cond do
+      Enum.member?(sec_websocket_protocol, "ocpp2.0") -> {:ok, "ocpp2.0"}
+      Enum.member?(sec_websocket_protocol, "ocpp1.6") -> {:ok, "ocpp1.6"}
+      true -> {:not_supported, sec_websocket_protocol}
     end
+  
+    case supported_version do
+      {:not_supported, protocol} -> 
+        warn "No supported protocol version found in #{protocol}"
+        {:shutdown, req}
+      {:ok, version} ->
+        serial = :cowboy_req.binding(:serial, req)
+        state = %{:serial => serial, :id => 1, :version => version |> String.replace(".", "") |> String.to_atom}
+        req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", version, req)
+        info "Negotiated #{version} for #{serial}"
+        Chargepoints.subscribe(serial)
+        {:cowboy_websocket, req2, state, %{:idle_timeout => 3_600 * 24 * 7}} # timeout is one week        
+    end
+
+    # case Enum.member?(:cowboy_req.parse_header("sec-websocket-protocol", req), "ocpp1.6") do
+    #   true ->
+    #     serial = :cowboy_req.binding(:serial, req)
+    #     state = %{:serial => serial, :id => 1, :version => :ocpp16}
+    #     req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", "ocpp1.6", req)
+    #     info "Negotiated ocpp1.6 for #{serial}"
+    #     Chargepoints.subscribe(serial)
+    #     {:cowboy_websocket, req2, state, %{:idle_timeout => 3_600 * 24 * 7}} # timeout is one week
+    #   false ->
+    #     {:shutdown, req}
+    # end
   end
 
   def websocket_init(state) do
@@ -32,7 +52,7 @@ defmodule WebsocketHandler do
         :ok
       serial ->
         OnlineChargers.delete(serial)
-        GenServer.call(Chargepoints, {:unsubscribe, serial})
+        Chargepoints.unsubscribe(serial)
         :ok
     end
   end
@@ -40,9 +60,10 @@ defmodule WebsocketHandler do
   def websocket_handle({:text, content}, state) do
     {:ok, message} = JSX.decode(content)
     serial = state[:serial]
-    GenServer.call(Chargepoints, {:message_seen, serial})
-    {resp, new_state} = GenServer.call(Ocpp.Messages, {message, state})
-    {:reply, resp, new_state}
+    Chargepoints.message_seen(serial)
+    info inspect(message)
+
+    Ocpp.Messages.handle_message(message,state)
   end
 
   def websocket_info({:json, msg}, state) do

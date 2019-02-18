@@ -19,6 +19,35 @@ defmodule Chargepoints do
     {:ok, pid}
   end
 
+  # Client calls
+
+  def subscribe(serial) do
+    GenServer.call(Chargepoints, {:subscribe, serial})
+  end
+
+  def unsubscribe(serial) do
+    GenServer.call(Chargepoints, {:unsubscribe, serial})    
+  end
+
+  def message_seen(serial) do
+    GenServer.call(Chargepoints, {:message_seen, serial})
+  end
+
+  def subscribers() do
+    
+  end  
+
+  def update_status(serial) do
+    
+  end
+
+  def evse_connectors(serial) do
+    
+  end
+
+
+  # Callbacks
+
   def handle_call({:subscribe, serial}, _from, _state) do
     case getChargerBySerial(serial) do
       nil ->
