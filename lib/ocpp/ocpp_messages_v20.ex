@@ -1,4 +1,5 @@
 defmodule Ocpp.Messages.V20 do
+  alias Ocpp.Messages, as: Messages
   @moduledoc """
     This module handles all OCPP 2.0 messages
   """
@@ -27,20 +28,12 @@ defmodule Ocpp.Messages.V20 do
   # Callbacks
 
   def handle_call({[2, id, "Heartbeat", _], state}, _sender, current_state) do
-    {state, {:ok, reply}} = handle_heartbeat(id, state)
+    {state, {:ok, reply}} = Messages.handle_heartbeat(id, state)
     {:reply, {{:text, reply}, state}, current_state}
   end
 
   def handle_call({message, state}, _sender, current_state) do
-    {state, {:ok, reply}} = handle_default(message, state)
+    {state, {:ok, reply}} = Messages.handle_notimplemented(message, state)
     {:reply, {{:text, reply}, state}, current_state}
-  end
-
-  defp handle_heartbeat(id, state) do
-    {state, JSX.encode([3, id, [currentTime: Utils.datetime_as_string]])}
-  end
-
-  defp handle_default(message, state) do
-    {state, JSX.encode([4, 0, [status: "Rejected", data: "Not Implemented"]])}
   end
 end
