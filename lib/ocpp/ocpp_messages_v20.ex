@@ -30,6 +30,6 @@ defmodule Ocpp.Messages.V20 do
   end
 
   defp handle_default(message, state) do
-    {state, JSX.encode([4, 0, [status: "Rejected", data: "Not Implemented"]])}    
+    {state, JSX.encode([4, 0, [status: "Rejected", data: "Not Implemented"]])}
   end
 end

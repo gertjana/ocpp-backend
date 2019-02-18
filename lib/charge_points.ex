@@ -26,25 +26,21 @@ defmodule Chargepoints do
   end
 
   def unsubscribe(serial) do
-    GenServer.call(Chargepoints, {:unsubscribe, serial})    
+    GenServer.call(Chargepoints, {:unsubscribe, serial})
   end
 
   def message_seen(serial) do
     GenServer.call(Chargepoints, {:message_seen, serial})
   end
 
-  def subscribers() do
-    
-  end  
+  def subscribers do
+  end
 
   def update_status(serial) do
-    
   end
 
   def evse_connectors(serial) do
-    
   end
-
 
   # Callbacks
 

@@ -1,4 +1,5 @@
 defmodule WebsocketHandler do
+  alias Ocpp.Messages, as: Messages
   @behaviour :cowboy_websocket
   @moduledoc """
   Handles websocket connections and negiotiating ocpp protocol (only 1.6 supported so far)
@@ -12,9 +13,9 @@ defmodule WebsocketHandler do
       Enum.member?(sec_websocket_protocol, "ocpp1.6") -> {:ok, "ocpp1.6"}
       true -> {:not_supported, sec_websocket_protocol}
     end
-  
+
     case supported_version do
-      {:not_supported, protocol} -> 
+      {:not_supported, protocol} ->
         warn "No supported protocol version found in #{protocol}"
         {:shutdown, req}
       {:ok, version} ->
@@ -23,20 +24,8 @@ defmodule WebsocketHandler do
         req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", version, req)
         info "Negotiated #{version} for #{serial}"
         Chargepoints.subscribe(serial)
-        {:cowboy_websocket, req2, state, %{:idle_timeout => 3_600 * 24 * 7}} # timeout is one week        
+        {:cowboy_websocket, req2, state, %{:idle_timeout => 3_600 * 24 * 7}} # timeout is one week
     end
-
-    # case Enum.member?(:cowboy_req.parse_header("sec-websocket-protocol", req), "ocpp1.6") do
-    #   true ->
-    #     serial = :cowboy_req.binding(:serial, req)
-    #     state = %{:serial => serial, :id => 1, :version => :ocpp16}
-    #     req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", "ocpp1.6", req)
-    #     info "Negotiated ocpp1.6 for #{serial}"
-    #     Chargepoints.subscribe(serial)
-    #     {:cowboy_websocket, req2, state, %{:idle_timeout => 3_600 * 24 * 7}} # timeout is one week
-    #   false ->
-    #     {:shutdown, req}
-    # end
   end
 
   def websocket_init(state) do
@@ -63,7 +52,7 @@ defmodule WebsocketHandler do
     Chargepoints.message_seen(serial)
     info inspect(message)
 
-    Ocpp.Messages.handle_message(message,state)
+    Messages.handle_message(message, state)
   end
 
   def websocket_info({:json, msg}, state) do

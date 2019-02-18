@@ -77,7 +77,7 @@ defmodule Ocpp.Messages.V16 do
     {state, {:ok, reply}} = handle_stop_transaction(id, [id_tag: id_tag, transaction_id: transaction_id, meter_stop: meter_stop, timestamp: timestamp], state)
     {:reply, {{:text, reply}, state}, current_state}
   end
-  
+
   # responses from chargepoint
 
   def handle_call({[3, _id, %{"status" => status}], state}, _sender, current_state) do
@@ -149,4 +149,3 @@ defmodule Ocpp.Messages.V16 do
     end
   end
 end
-
