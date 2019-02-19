@@ -21,7 +21,7 @@ defmodule WebsocketHandler do
       {:ok, protocol} ->
         serial = :cowboy_req.binding(:serial, req)
         state = %{:serial => serial, :id => 1, :version => protocol |> String.replace(".", "") |> String.to_atom}
-        req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", version, req)
+        req2 = :cowboy_req.set_resp_header("sec-websocket-protocol", protocol, req)
         info "Negotiated #{protocol} for #{serial}"
         Chargepoints.subscribe(serial, protocol)
         {:cowboy_websocket, req2, state, %{:idle_timeout => 3_600 * 24 * 7}} # timeout is one week
