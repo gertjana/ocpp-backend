@@ -42,7 +42,7 @@ defmodule Chargesessions do
   def handle_call({:start, connector_id, serial, id_tag, start_time}, _from, state) do
     session = %Session{connector_id: connector_id |> Integer.to_string, serial: serial, token: id_tag, start_time: start_time}
     {:ok, inserted} = OcppBackendRepo.insert(session)
-    {:reply, {:ok, inserted.id}, state}
+    {:reply, {:ok, inserted.id |> Integer.to_string}, state}
   end
 
   def handle_call({:stop, transaction_id, volume, end_time}, _from, state) do
