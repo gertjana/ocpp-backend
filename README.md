@@ -14,6 +14,7 @@ Protocol support
 ----------------
 OCPP 1.6 
  * Most normal Chargepoint operations are supported
+ 
 OCPP 2.0
  * Just the Heartbeat message is implemented
 
