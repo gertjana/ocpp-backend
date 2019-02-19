@@ -1,9 +1,6 @@
 defmodule Ocpp.Messages.V16Test do
   use ExUnit.Case, async: true
   alias Ocpp.Messages.V16, as: V16
-  alias Model.Session, as: Session
-  import Mock
-  import Logger
 
   describe "The Central System should respond to messages as specified in the OCPP 1.6 Version 2 specification" do
 

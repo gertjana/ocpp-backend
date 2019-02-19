@@ -13,8 +13,7 @@ defmodule Ocpp.Messages do
     end
   end
 
-
-  # implementations called from the version specific modules
+  # Generic implementations called from the version specific modules
 
   def handle_default(id, state) do
     {state, JSX.encode([3, id, []])}
@@ -25,7 +24,7 @@ defmodule Ocpp.Messages do
   end
 
   def handle_authorize(id, id_tag, state) do
-    notification_status = GenServer.call(TokenAuthorisation, {:token, id_tag})
+    notification_status = TokenAuthorisation.authorize(id_tag)
     {state, JSX.encode([3, id, [idTagInfo: [status: notification_status, idToken: id_tag]]])}
   end
 
@@ -42,7 +41,7 @@ defmodule Ocpp.Messages do
   end
 
   def handle_status_notification(id, status, connector_id, state) do
-    GenServer.call(Chargepoints, {:status, status, state.serial, connector_id})
+    Chargepoints.update_status(state.serial, status, connector_id)
     {state, JSX.encode([3, id, []])}
   end
 
@@ -53,7 +52,7 @@ defmodule Ocpp.Messages do
       _ ->
         {:ok, start_time} = Timex.parse(timestamp, "{ISO:Extended}")
 
-        {:ok, transaction_id} = GenServer.call(Chargesessions, {:start, connector_id, state.serial, id_tag, start_time})
+        {:ok, transaction_id} = Chargesessions.start(connector_id, state.serial, id_tag, start_time)
 
         state = Map.put(state, :currentTransaction, %{transaction_id: transaction_id, start: meter_start, timestamp: timestamp, idTag: id_tag})
 
@@ -70,7 +69,7 @@ defmodule Ocpp.Messages do
             volume = meter_stop - Map.get(current_transaction, :start)
             {:ok, stop_time} = Timex.parse(timestamp, "{ISO:Extended}")
 
-            GenServer.call(Chargesessions, {:stop, Map.get(current_transaction, :transaction_id), volume, stop_time})
+            Chargesessions.stop(Map.get(current_transaction, :transaction_id), volume, stop_time)
 
             state = Map.delete(state, :currentTransaction)
             {state, JSX.encode([3, id, [idTagInfo: [status: "Accepted", idToken: id_tag]]])}

@@ -24,9 +24,9 @@ defmodule PageHandlers.Charger do
 
   def build_body(request) do
   	serial = :cowboy_req.binding(:serial, request)
-  	{:ok, charger} = GenServer.call(Chargepoints, {:subscriber, serial})
-    {:ok, sessions} = GenServer.call(Chargesessions, {:serial, serial, 20, 0})
-    {:ok, evse_connectors} = GenServer.call(Chargepoints, {:evse_connectors, serial})
+  	{:ok, charger} = Chargepoints.subscriber(serial)
+    {:ok, sessions} = Chargesessions.for_serial(serial, 20, 0)
+    {:ok, evse_connectors} = Chargepoints.evse_connectors(serial)
     online = OnlineChargers.get(serial) != nil
 
     PageUtils.renderPage("charger_page.html", "Charger #{serial}", [

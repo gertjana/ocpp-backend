@@ -19,6 +19,26 @@ defmodule Chargesessions do
     {:ok, pid}
   end
 
+  # Client calls
+
+  def all(limit, offset) do
+    GenServer.call(Chargesessions, {:all, limit, offset})
+  end
+
+  def for_serial(serial, limit, offset) do
+    GenServer.call(Chargesessions, {:serial, serial, limit, offset})
+  end
+
+  def start(connector_id, serial, id_tag, start_time) do
+    GenServer.call(Chargesessions, {:start, connector_id, state.serial, id_tag, start_time})
+  end
+
+  def stop(transaction_id, volume, stop_time) do
+    GenServer.call(Chargesessions, {:stop, transaction_id, volume, stop_time})
+  end
+
+  # callbacks
+
   def handle_call({:start, connector_id, serial, id_tag, start_time}, _from, state) do
     session = %Session{connector_id: connector_id |> Integer.to_string, serial: serial, token: id_tag, start_time: start_time}
     {:ok, inserted} = OcppBackendRepo.insert(session)

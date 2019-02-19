@@ -18,7 +18,7 @@ defmodule PageHandlers.Chargers do
   end
 
   defp build_body(_request) do
-    {:ok, chargers} = GenServer.call(Chargepoints, :subscribers)
+    {:ok, chargers} = Chargepoints.subscribers
   	PageUtils.renderPage("chargers_page.html", "Chargers", [chargers: chargers])
   end
 end

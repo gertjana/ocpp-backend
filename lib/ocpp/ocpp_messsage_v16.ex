@@ -74,8 +74,8 @@ defmodule Ocpp.Messages.V16 do
     {:reply, {{:text, reply}, state}, current_state}
   end
 
-  def handle_call({[2, id, "StopTransaction", %{"idTag" => id_tag, "transactionId" => transaction_id, "meterStop" => meter_stop, "timestamp" => timestamp}], state}, _sender, current_state) do
-    {state, {:ok, reply}} = Messages.handle_stop_transaction(id, [id_tag: id_tag, transaction_id: transaction_id, meter_stop: meter_stop, timestamp: timestamp], state)
+  def handle_call({[2, id, "StopTransaction", %{"idTag" => id_tag, "transactionId" => trans_id, "meterStop" => meter_stop, "timestamp" => ts}], state}, _sender, current_state) do
+    {state, {:ok, reply}} = Messages.handle_stop_transaction(id, [id_tag: id_tag, transaction_id: trans_id, meter_stop: meter_stop, timestamp: ts], state)
     {:reply, {{:text, reply}, state}, current_state}
   end
 

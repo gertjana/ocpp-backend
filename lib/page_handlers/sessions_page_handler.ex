@@ -19,7 +19,7 @@ defmodule PageHandlers.Sessions do
   end
 
   defp build_body(_request) do
-    {:ok, sessions} = GenServer.call(Chargesessions, {:all, 50, 0})
+    {:ok, sessions} = Chargesessions.all(50, 0)
     PageUtils.renderPage("sessions_page.html", "Sessions", [sessions: sessions])
   end
 end

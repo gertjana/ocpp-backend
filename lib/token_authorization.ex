@@ -16,8 +16,16 @@ defmodule TokenAuthorisation do
     {:ok, pid}
   end
 
+  # Client 
+
+  def authorize(id_tag) do
+    GenServer.call(TokenAuthorisation, {:token, id_tag})
+  end
+
+  # Callbacks
+
   def handle_call({:token, token}, _sender, state) do
-    {:ok, tokens} = GenServer.call(Chargetokens, :all)
+    {:ok, tokens} = Chargetokens.all
     authorised =
     case tokens
       |> Enum.filter(fn(t) -> t.token == token end)

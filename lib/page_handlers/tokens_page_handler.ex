@@ -18,7 +18,7 @@ defmodule PageHandlers.Tokens do
   end
 
   defp build_body(_request) do
-  	{:ok, tokens} = GenServer.call(Chargetokens, :all)
+  	{:ok, tokens} = Chargetokens.all
   	PageUtils.renderPage("tokens_page.html", "Tokens", [tokens: tokens])
   end
 end

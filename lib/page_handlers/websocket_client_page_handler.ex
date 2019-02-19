@@ -3,9 +3,7 @@ defmodule PageHandlers.WebsocketClient do
 @moduledoc """
   Renders A Client to test the backend
  """
-   def init(req, state) do
-    handle(req, state)
-  end
+  def init(req, state), do: handle(req, state)
 
   def handle(request, state) do
     req = :cowboy_req.reply(
@@ -23,7 +21,7 @@ defmodule PageHandlers.WebsocketClient do
   end
 
   def build_body(_request) do
-    {:ok, chargers} = GenServer.call(Chargepoints, :subscribers)
+    {:ok, chargers} = Chargepoints.subscribers
     PageUtils.renderPage("client_page.html", "WebsocketClient", [chargers: chargers])
   end
 end

@@ -39,13 +39,15 @@ defmodule OcppBackend do
   end
 
   defp page_routes do
-    [{"/client", PageHandlers.WebsocketClient, []},
-    {"/about", PageHandlers.About, []},
-    {"/chargers", PageHandlers.Chargers, []},
-    {"/chargers/:serial", PageHandlers.Charger, []},
-    {"/dashboard", PageHandlers.Dashboard, []},
-    {"/sessions", PageHandlers.Sessions, []},
-    {"/tokens", PageHandlers.Tokens, []}]
+    [
+      {"/", PageHandlers.Dashboard, []},
+      {"/client", PageHandlers.WebsocketClient, []},
+      {"/about", PageHandlers.About, []},
+      {"/chargers", PageHandlers.Chargers, []},
+      {"/chargers/:serial", PageHandlers.Charger, []},
+      {"/dashboard", PageHandlers.Dashboard, []},
+      {"/sessions", PageHandlers.Sessions, []},
+      {"/tokens", PageHandlers.Tokens, []}]
   end
 
   defp api_routes do

@@ -18,6 +18,16 @@ defmodule Chargetokens do
     {:ok, pid}
   end
 
+
+  # client calls
+
+  def all do
+    GenServer.call(Chargetokens, :all)
+  end
+  
+  # callbacks
+
+
   def handle_call({:add, token, provider, description}, _from, _state) do
     token = %Token{token: token, provider: provider, description: description}
     {:ok, inserted} = OcppBackendRepo.insert(token)
