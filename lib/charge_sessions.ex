@@ -30,7 +30,7 @@ defmodule Chargesessions do
   end
 
   def start(connector_id, serial, id_tag, start_time) do
-    GenServer.call(Chargesessions, {:start, connector_id, state.serial, id_tag, start_time})
+    GenServer.call(Chargesessions, {:start, connector_id, serial, id_tag, start_time})
   end
 
   def stop(transaction_id, volume, stop_time) do
