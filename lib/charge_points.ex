@@ -21,8 +21,8 @@ defmodule Chargepoints do
 
   # Client calls
 
-  def subscribe(serial) do
-    GenServer.call(Chargepoints, {:subscribe, serial})
+  def subscribe(serial, protocol) do
+    GenServer.call(Chargepoints, {:subscribe, serial, protocol})
   end
 
   def unsubscribe(serial) do
@@ -51,19 +51,20 @@ defmodule Chargepoints do
 
   # Callbacks
 
-  def handle_call({:subscribe, serial}, _from, _state) do
+  def handle_call({:subscribe, serial, protocol}, _from, _state) do
     case getChargerBySerial(serial) do
       nil ->
         charger = %Charger{serial: serial,
-                                 connected: Timex.now,
-                                 last_seen: Timex.now}
+                           protocol: protocol,
+                           connected: Timex.now,
+                           last_seen: Timex.now}
         {:ok, _} = OcppBackendRepo.insert(
           %EvseConnector{serial: serial, evse_id: 1, connector_id: 1, current_type: "AC", power_kwh: "22"})
         {:ok, inserted} = OcppBackendRepo.insert(charger)
         {:reply, :ok, inserted}
 
       _charger ->
-        {:ok, updated} = update(serial, %{status: "Available"})
+        {:ok, updated} = update(serial, %{status: "Available", protocol: protocol})
         {:reply, :ok, updated}
     end
   end

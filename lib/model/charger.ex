@@ -8,6 +8,7 @@ defmodule Model.Charger do
 
   schema "charger" do
     field :serial,    :string
+    field :protocol,  :string
     field :connected, :naive_datetime
     field :last_seen, :naive_datetime
     field :online,    :boolean, virtual: true
@@ -17,6 +18,6 @@ defmodule Model.Charger do
 
   def changeset(charger, params \\ %{}) do
     charger
-    	|> cast(params, [:serial, :connected, :last_seen])
+    	|> cast(params, [:serial, :protocol, :connected, :last_seen])
   end
 end

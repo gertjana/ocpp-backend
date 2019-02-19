@@ -5,6 +5,9 @@
         <h3><%= charger.serial %></h3>
       </div>
       <div class="col-lg-1">
+        <%= charger.protocol %>
+      </div>
+      <div class="col-lg-1">
         <%= if online do %>
           <span class="badge badge-success badge-pill">Online</span>
         <% else %>
