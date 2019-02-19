@@ -16,7 +16,7 @@ defmodule TokenAuthorisation do
     {:ok, pid}
   end
 
-  # Client 
+  # Client
 
   def authorize(id_tag) do
     GenServer.call(TokenAuthorisation, {:token, id_tag})
