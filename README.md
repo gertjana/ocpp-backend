@@ -1,4 +1,4 @@
-OCPP 1.6 Backend
+OCPP Backend
 ===================
 [![Build Status](https://travis-ci.org/gertjana/ocpp16-backend.svg?branch=master)](https://travis-ci.org/gertjana/ocpp16-backend) [![codebeat badge](https://codebeat.co/badges/a97a16d8-3f75-4deb-8ecc-9d8141ddf3c9)](https://codebeat.co/projects/github-com-gertjana-ocpp16-backend-master)
 
@@ -10,13 +10,21 @@ Start of an OCPP 1.6/2.0 compatible backend in Elixir using Cowboy
 
 This is starting to make sense on its own
 
+Protocol support
+----------------
+OCPP 1.6 
+ * Most normal Chargepoint operations are supported
+OCPP 2.0
+ * Just the Heartbeat message is implemented
+
 Why not Phoenix?
 -----------------
-Every elixir person I have talked too about this asked me this
+Almost every elixir person I have talked too about this asked me this
 
 2 reasons:
  * I want to learn about Elixir, not about Phoenix
  * Phoenix has their own implementation on top of websockets, I need the raw stuff
+
 
 
 Usage:
