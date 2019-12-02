@@ -7,3 +7,8 @@ config :ocpp_backend, OcppBackendRepo,
   password: "postgres"
 
 config :mix_docker, image: "addictivesoftware/ocpp_backend"
+
+config :kafka_ex,
+  brokers: [
+    {"localhost", 9092}
+  ]
