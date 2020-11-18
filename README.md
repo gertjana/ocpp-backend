@@ -34,6 +34,7 @@ Usage:
 This is verified to run on 
  * Elixir 1.5.3 / Erlang OTP 20.2.2
  * Elixir 1.7.2 / Erlang OTP 20.2.2
+ * Elixir 1.9.1 / Erlang OTP 22.0.6
 
 Clone the repo, and change directory to it.  Run the following commands:
 
